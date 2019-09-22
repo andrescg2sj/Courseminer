@@ -1,6 +1,7 @@
 
 
-##Presentación
+Presentación
+=====
 
 Este proyecto surge con la intención de apoyar el servicio prestado por [Pueblos Unidos](http://pueblosunidos.org/) en la Comunidad de Madrid para facilitar la [búsquedad de cursos de formación](https://voluntariadopueblosunidosv09.firebaseapp.com/#/main), como ayuda a la búsqueda de empleo.
 
@@ -8,7 +9,8 @@ Hasta ahora, la única forma de actualizar los datos en este buscador es introdu
 
 El objetivo de **Courseminer** es facilitar esta tarea, procesando automáticamente los documentos que emiten las principales entidades (por ejemplo, los CEPI de la Comunidad de Madrid), y rellenar la hoja de cálculo con los datos obtenidos.
 
-##Primeros pasos
+Primeros pasos
+====
 
 Este proyecto usa Maven como gestor de construcción.
 
@@ -19,17 +21,22 @@ Compilar el código:
 mvn package
 ```
 
-##Estructura
+Estructura
+===
 
 ...
 
-##Próximas tareas
+Próximas tareas
+===
 
 Fases del proyecto.
 
 1. Extraer datos de los documentos procedentes de un CEPI y exportarlos a un documento Excel.
 2. Extraer datos de los documentos de una OMIO y exportarlos a un docuemnto Excel.
 3. Desarrollar *web scrappers* para distintas fuentes de cursos en la web.
+
+Primera fase. Extraer datos de un CEPI
+---
 
 Las próximas tareas a realizar en el proyecto, por orden de prioridad son las siguientes:
 
