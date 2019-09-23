@@ -16,10 +16,24 @@ Este proyecto usa Maven como gestor de construcción.
 
 Compilar el código:
 
-
 ```
 mvn package
 ```
+
+Compilar con dependencias:
+
+```
+mvn compile
+mvn package
+mvn assembly:assembly
+```
+
+Ejecutar `PDFTableToHTML`:
+
+```
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar org.sj.punidos.crminer.PDFTableToHTML
+```
+
 
 Estructura
 ===
