@@ -253,7 +253,7 @@ public class TableMaker
     
     public String toSVG(Area area) {
     	Rectangle2D rect = area.getBounds();
-    	return String.format("<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" />", 
+    	return String.format("<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" />\n", 
     			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
     

@@ -6,6 +6,9 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
+import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.sectorizer.GStringBuffer;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -75,7 +78,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	 * https://apache.googlesource.com/pdfbox/+/a3241d612d3ae387525d58d64b93b7804dde5939/pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFGraphicsStreamEngine.java
 	 */
 	
-	//GStringBuffer regionText;
+    GStringBuffer regionText = new GStringBuffer();
 	//RegionCluster cluster;
 	
 	int rectCount = 0;
@@ -117,6 +120,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     	fos.close();
     	
     }
+
     
     /**
      * Constructor.
@@ -293,10 +297,13 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     {
         
         System.out.print("showTextStrings \"");
-        //region.reset();
+        regionText.reset();
         super.showTextStrings(array);
-        //Rectangle r = region.getRegion();
-        //cluster.push(new GraphicString(region.getText(),r , null));
+
+	Rectangle r = regionText.getRegion();
+	if(r == null)
+	    throw new NullPointerException("regionText.region");
+        tmaker.add(new GraphicString(regionText.getText(), r));
         System.out.println("\"");
         //System.out.println(r.toString());
 
@@ -321,8 +328,8 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         AffineTransform at = textRenderingMatrix.createAffineTransform();
         bbox = at.createTransformedShape(bbox);
         
-        //region.add(unicode);
-        //region.add(bbox.getBounds());
+        regionText.add(unicode);
+        regionText.add(bbox.getBounds());
 
     }
     
