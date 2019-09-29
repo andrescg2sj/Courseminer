@@ -8,13 +8,17 @@ import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
 
 public class PDFTableToHTML
 {
-    static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
+    //static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
+    static String DEFAULT_PATH = "res/test-1cell.pdf";
 
     public static void main(String args[]) {
 	String path = DEFAULT_PATH;
+	//Rectangle clipArea = new Rectangle(0,108,583, 720-108);
+	Rectangle clipArea = null;
 	
 	if(args.length > 0) {
 	    path = args[0];
+	    clipArea = null;
 	} else {
 	    System.out.println("No arguments. Using default path.");
 	}
@@ -26,7 +30,7 @@ public class PDFTableToHTML
 	    //CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
 	    // 108,0,720,583
 	    CustomGraphicsStreamEngine engine =
-		new CustomGraphicsStreamEngine(page,								       new Rectangle(0,108,583, 720-108));
+		new CustomGraphicsStreamEngine(page, clipArea);
 	    engine.run();
 	    doc.close();
 	    //System.out.println("------------------");

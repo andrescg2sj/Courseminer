@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.Line2D;
+//import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
@@ -86,6 +88,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	int strokeCount = 0;
 	
 	ClippingArea clip;
+    GrPath path = new GrPath();
 	
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
 	TableMaker tmaker = new TableMaker();
@@ -211,6 +214,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     {
     	//region.reset();
     	//region.add(new Point((int)x,(int)y));
+	path.moveTo(new Point2D.Float(x,y));
         System.out.printf("moveTo %.2f %.2f\n", x, y);
     }
     @Override
@@ -218,6 +222,8 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     {
     	//region.add(new Point((int)x,(int)y));
     	lineCount++;
+	path.lineTo(new Point2D.Float(x,y));
+
         System.out.printf("lineTo %.2f %.2f\n", x, y);
     }
     @Override
@@ -258,8 +264,13 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     @Override
     public void strokePath() throws IOException
     {
-    	pushCurrent();
-    	strokeCount++;
+    	//pushCurrent();o
+
+	Iterable<Line2D> lines = path.getIterable();
+	for(Line2D l : lines) {
+	    tmaker.add(new Line(l.getP1(), l.getP2()));
+	    strokeCount++;
+	}
         System.out.println("strokePath");
     }
     @Override
