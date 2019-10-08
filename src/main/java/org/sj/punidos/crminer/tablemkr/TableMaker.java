@@ -5,6 +5,7 @@ package org.sj.punidos.crminer.tablemkr;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.Locale;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 
@@ -253,7 +254,7 @@ public class TableMaker
     
     public String toSVG(Area area) {
     	Rectangle2D rect = area.getBounds();
-    	return String.format("<rect x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\" />\n", 
+    	return String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"green\" stroke-width=\"3\" />\n", 
     			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
     

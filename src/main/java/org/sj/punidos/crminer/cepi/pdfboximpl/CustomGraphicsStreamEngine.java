@@ -1,16 +1,3 @@
-package org.sj.punidos.crminer.cepi.pdfboximpl;
-
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Line2D;
-//import java.util.Iterator;
-
-import org.sj.punidos.crminer.sectorizer.GraphicString;
-import org.sj.punidos.crminer.sectorizer.GStringBuffer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -29,10 +16,26 @@ import org.sj.punidos.crminer.sectorizer.GStringBuffer;
  */
 
 /*
- * Ref:
+ * This file is a modified version from:
+ *
  * https://apache.googlesource.com/pdfbox/+/trunk/examples/src/main/java/org/apache/pdfbox/examples/rendering
  *
  */
+
+
+package org.sj.punidos.crminer.cepi.pdfboximpl;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Line2D;
+//import java.util.Iterator;
+
+import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.sectorizer.GStringBuffer;
+
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
