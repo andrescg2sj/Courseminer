@@ -167,7 +167,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         showStats();
         java.util.Vector<org.sj.punidos.crminer.tablemkr.Area> areas = tmaker.buildAreas();
         //logAreas(areas);
-        System.out.println(tmaker.toSVG(areas));
+        tmaker.toSVG(areas);
     }
     
     void showStats() {

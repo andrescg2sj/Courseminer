@@ -5,9 +5,9 @@ package org.sj.punidos.crminer.tablemkr;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Vector;
-import java.util.Locale;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.tablemkr.graphtrace.SvgTrace;
 
 public class TableMaker
 {
@@ -16,6 +16,9 @@ public class TableMaker
     
     Vector<Line> lines;
     Vector<GraphicString> gstrings;
+
+    /* debug */
+    SvgTrace tracer = new SvgTrace();
 
     public TableMaker() {
     	lines = new Vector<Line>();
@@ -244,19 +247,17 @@ public class TableMaker
      * 
      * @param areas
      */
-    public String toSVG(Vector<Area> areas) {
-    	String s = "<svg>";
-    	for(Area a: areas) {
-    		s += toSVG(a);
-    	}
-    	return s+"</svg>";
+    public void toSVG(Vector<Area> areas) {
+	tracer.exportAreas(areas);
     }
-    
+
+    /*
     public String toSVG(Area area) {
     	Rectangle2D rect = area.getBounds();
     	return String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"green\" stroke-width=\"3\" />\n", 
     			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
+    */
     
 
 
