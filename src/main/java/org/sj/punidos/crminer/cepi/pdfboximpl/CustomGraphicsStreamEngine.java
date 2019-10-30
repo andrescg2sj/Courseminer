@@ -181,7 +181,12 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
-    	
+	//strokeRectangle(p0,p1,p2,p3);
+    }
+
+    public void strokeRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
+    {
+
         Rectangle r = ContentRegion.rectangleFromPoints(p0,p1,p2,p3);
         if(clip.clip(r)) {
             System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
@@ -200,6 +205,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         }
         //cluster.pushRegion(r);
     }
+    
     @Override
     public void drawImage(PDImage pdImage) throws IOException
     {
