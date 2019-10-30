@@ -41,6 +41,12 @@ public class GrPath {
     public Iterable<Line2D> getIterable() {
 	return elements;
     }
+
+    public void clear() {
+	elements.clear();
+    }
+
+    
 	
 }
 

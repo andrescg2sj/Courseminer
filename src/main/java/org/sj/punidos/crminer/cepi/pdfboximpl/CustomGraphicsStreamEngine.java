@@ -97,7 +97,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	TableMaker tmaker = new TableMaker();
 	
 	
-    /*
+   /*
     public static void main(String[] args) throws IOException
     {
         File file = new File("res/CEPI-1-1.pdf");
@@ -270,11 +270,14 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     	//pushCurrent();o
 
 	Iterable<Line2D> lines = path.getIterable();
+	int linCnt = 0;
 	for(Line2D l : lines) {
 	    tmaker.add(new Line(l.getP1(), l.getP2()));
-	    strokeCount++;
+	    linCnt++;
 	}
-        System.out.println("strokePath");
+	strokeCount += linCnt;
+        System.out.println("strokePath("+linCnt+")");
+	path.clear();
     }
     @Override
     public void fillPath(int windingRule) throws IOException
@@ -318,9 +321,9 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	if(r == null)
 	    throw new NullPointerException("regionText.region");
         tmaker.add(new GraphicString(regionText.getText(), r));
-        System.out.println("\"");
-        //System.out.println(r.toString());
-
+        System.out.println(regionText.getText());
+      System.out.println("\"");
+  
     }
     /**
      * Overridden from PDFStreamEngine.
@@ -350,7 +353,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     protected void showVector(Vector d)
     {
     	System.out.print(d.toString());
-    }
+    }	
     
     // NOTE: there are may more methods in PDFStreamEngine which can be overridden here too.
 }

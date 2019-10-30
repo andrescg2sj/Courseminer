@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Vector;
+import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 
@@ -68,6 +69,11 @@ public abstract class Area
     {
     	if(this.contains(gstr.getBounds()))
     		content.add(gstr);
+    }
+
+    public Iterator<GraphicString> getContents()
+    {
+	return content.iterator();
     }
 
 

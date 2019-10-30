@@ -30,7 +30,7 @@ public class TableMaker
     private void logLines(Line lines[]) {
     	System.out.println("lines:" + lines.length);
     	for(Line l: lines) {
-    		System.out.println(l.toString());
+    		System.out.println("   "+l.toString());
     	}
     }
     
@@ -174,7 +174,7 @@ public class TableMaker
     
     
     
-    public Vector<Area> buildAreas() {
+   public Vector<Area> buildAreas() {
     	Line lineArray[] = 	lines.toArray(new Line[lines.size()]);
     	return buildAreas(lineArray);
     }
@@ -248,7 +248,10 @@ public class TableMaker
      * @param areas
      */
     public void toSVG(Vector<Area> areas) {
-	tracer.exportAreas(areas);
+	System.out.println("Exporting areas.");
+	tracer.exportAreasAndGStrings(areas, gstrings);
+	System.out.println("   GStrings: "+gstrings.size());
+	//tracer.exportAreasAndText(areas,);
     }
 
     /*
