@@ -23,9 +23,7 @@ mvn package
 Compilar con dependencias:
 
 ```
-mvn compile
-mvn package
-mvn assembly:assembly
+mvn compile package assembly:single
 ```
 
 Ejecutar `PDFTableToHTML`:
