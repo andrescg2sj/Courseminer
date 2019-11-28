@@ -36,6 +36,18 @@ public class Cell {
     		contents = cont;
     	}
     }
+    
+    public int numStrings() {
+    	return contents.size();
+    }
+    
+    public String fullText() {
+    	String t = "";
+    	for(GraphicString gs : contents) {
+    		t += gs.getText();
+    	}
+    	return t;
+    }
 
 	
 	public String getString(int i) {

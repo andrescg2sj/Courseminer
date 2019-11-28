@@ -25,12 +25,16 @@ public class Table {
 	
 
 	public String toHTML() {
-		String data = "<table>";
-		for(int i=0; i<contents[0].length;i++) {
+		String data = "<table style=\"\">";
+		for(int i=0; i<contents.length;i++) {
 			data += "<tr>" ;
-			for(int j=0; j<contents.length;j++) {
-				data += "<td>"  +"</td>";
+			for(int j=0; j<contents[i].length;j++) {
+				if(contents[i][j] != null) {
+					Cell cell = contents[i][j];
+					data += "<td>" + cell.fullText() +"</td>";
+				}
 			}
+			data += "</tr>" ;
 		}
 		return data + "</table>";
 		//throw new UnsupportedOperationException("Table.toHTML");

@@ -232,6 +232,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         region.reset();
         super.showTextStrings(array);
         Rectangle r = region.getRegion();
+        //System.out.println("  "+r.toString());
         cluster.push(new PDFString(region.getText(),r , null));
         System.out.println("\"");
         System.out.println(r.toString());

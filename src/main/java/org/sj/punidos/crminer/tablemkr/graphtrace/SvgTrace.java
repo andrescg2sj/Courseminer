@@ -11,28 +11,29 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import org.sj.punidos.crminer.tablemkr.Area;
+import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 import java.util.Locale;
 
 
 
-public class SvgTrace {
+public class SvgTrace implements CommonInfo {
 
     //String path;
     //FileWriter fwriter;
     float drawAreaFactor = 1.1f;
-    public static final String NEW_LINE = "\n";
 
     public SvgTrace() {
 	//this.path = path;
 
     }
+    
 
     public String generateLogFilename() {
 	DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
 	Date date = new Date();
 	String timestamp = dateFormat.format(date); 
-	return "out/log" + timestamp +".svg";
+	return DST_PATH + "log" + timestamp +".svg";
     }
 
     public void exportAreasAndGStrings(Vector<Area> areas,
@@ -55,7 +56,7 @@ public class SvgTrace {
     	for(Area a: areas) {
 	    content += areaToSvg(a, bounds);
     	}
-	String s = String.format("<svg width=\"%.2f\" height=\"%.2f\">",
+	String s = String.format(Locale.ROOT, "<svg width=\"%.2f\" height=\"%.2f\" xmlns=\"http://www.w3.org/2000/svg\">"+NEW_LINE,
 				 (float) bounds.getMaxX()*drawAreaFactor,
 				 (float) bounds.getMaxY()*drawAreaFactor);
 
@@ -73,7 +74,8 @@ public class SvgTrace {
 	    fwriter.write(s);
 	    fwriter.close();
 	} catch(IOException ioe) {
-	    ioe.printStackTrace();
+	    //ioe.printStackTrace();
+		System.err.println("Error trying to write graphic log: " + ioe.getMessage());
 	}
     }
 

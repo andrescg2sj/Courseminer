@@ -125,6 +125,7 @@ public class TableMaker
     	}
     	System.out.println("added "+count+ " strings");
     }
+
     
     
     public Table areasToTable(Vector<Area> areas)
@@ -151,7 +152,7 @@ public class TableMaker
     		try {
 				System.out.println("Testing:" + clo.row+","+clo.col);
     			if(table[clo.row][clo.col] != null) {
-    				System.out.println("Warning! repeated.");
+    				System.err.println("Warning! repeated.");
     			} else {
     				System.out.println("cell: "+clo.toString());
     				System.out.println("   indices:" + clo.row+","+clo.col);
@@ -167,8 +168,6 @@ public class TableMaker
     	}
     	
     	
-    	//return new Table(locToCells(loctable));
-		System.out.println("Building table...");
     	return new Table(table);
     }
     
@@ -183,8 +182,56 @@ public class TableMaker
     	if(lines.size() > 0)
     		lines = new Vector<Line>();
     }
-
+    
+    
     public Vector<Area> buildAreas(Line lineArray[]) {
+    	//TODO: manage bad tables
+    	Area fullArea = new RectArea(Area.getMaximumRect(lineArray));
+    	System.out.println("FullArea:");
+    	System.out.println(fullArea);
+
+    	//TODO: remove. Not necessary.
+    	//lineArray = removeBounds(fullArea, lineArray);
+    	//System.out.println("Without boundaries:");
+    	logLines(lineArray);
+
+    	Vector<Area> areas = new Vector<Area>();
+    	
+    	
+
+    	areas.add(fullArea);
+
+    	Vector<Line> lines = new Vector<Line>(Arrays.asList(lineArray));
+    	
+    	//TODO: Is this algorithm optimal? Is there any redundancy?
+    	while(lines.size() > 0) {
+    		
+    		for(int i=0; i<lines.size(); i++) {
+    			int hits = 0;
+				Line l = lines.get(i);
+	    	    for(int j=0;j<areas.size(); j++) {
+	    	    	Area a = areas.get(j);
+
+    				if(a.collision(l, collisionThreshold)) {
+    					Area parts[] = a.split(l);
+    					areas.remove(j);
+    					areas.addAll(Arrays.asList(parts));
+    					hits++;
+    				}
+    				    				
+    			}
+    			if(hits == 0)
+    				lines.remove(l);
+    		}
+    	}
+
+    	
+    	System.out.println("returning areas: "+ areas.size());
+    	return areas;
+    }
+
+
+    public Vector<Area> buildAreas_old(Line lineArray[]) {
     	//TODO: manage bad tables
     	Area fullArea = new RectArea(Area.getMaximumRect(lineArray));
     	System.out.println("FullArea:");
@@ -205,22 +252,22 @@ public class TableMaker
     	    //Vector<Area> newAreas = new Vector<Area>();
     	    
     	    for(int i=0;i<areas.size(); i++) {
-    		Area a = areas.get(i);
-    		if(a.collision(l, collisionThreshold)) {
-    		    Area parts[] = a.split(l);
-
-    		    // this should not happen, if collision does its job.
-    		    if(parts == null)
-    			throw new NullPointerException("Failed to split area");
-
-    		    /* remove area */
-    		    areas.remove(i);
-    		    
-    		    /* add parts */
-    		    for(Area p: parts) {
-    			areas.add(p);
-    		    }
-    		}
+	    		Area a = areas.get(i);
+	    		if(a.collision(l, collisionThreshold)) {
+	    		    Area parts[] = a.split(l);
+	
+	    		    // this should not happen, if collision does its job.
+	    		    if(parts == null)
+	    			throw new NullPointerException("Failed to split area");
+	
+	    		    /* remove area */
+	    		    areas.remove(i);
+	    		    
+	    		    /* add parts */
+	    		    for(Area p: parts) {
+	    		    	areas.add(p);
+	    		    }
+	    		}
     	    }
     	    //areas.addAll(newAreas);
     	}

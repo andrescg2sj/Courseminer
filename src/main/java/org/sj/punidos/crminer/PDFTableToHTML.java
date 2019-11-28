@@ -6,15 +6,24 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
 
-public class PDFTableToHTML
+public class PDFTableToHTML implements CommonInfo
 {
     //static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
     static String DEFAULT_PATH = "res/test-1cell.pdf";
+    
+    public static void createDestDirectory() {
+    	 File dir = new File(DST_PATH);
+    	 if(!dir.isDirectory()) {
+    		 dir.mkdirs();
+    	 }
+    }
+
 
     public static void main(String args[]) {
 	String path = DEFAULT_PATH;
 	//Rectangle clipArea = new Rectangle(0,108,583, 720-108);
 	Rectangle clipArea = null;
+	
 	
 	if(args.length > 0) {
 	    path = args[0];
@@ -24,6 +33,8 @@ public class PDFTableToHTML
 	}
 
 	try {
+		createDestDirectory();
+
 	    File file = new File(path);
 	    PDDocument doc = PDDocument.load(file);
 	    PDPage page = doc.getPage(0);
@@ -36,7 +47,7 @@ public class PDFTableToHTML
 	    //System.out.println("------------------");
 	    //System.out.println(engine.cluster.toHTML());
         
-	    engine.writeHTML("out/doc1.htm");
+	    engine.writeHTML(DST_PATH + "doc1.htm");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

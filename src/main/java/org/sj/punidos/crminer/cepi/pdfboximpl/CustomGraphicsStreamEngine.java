@@ -42,12 +42,16 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
@@ -55,10 +59,12 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
+import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.sectorizer.ContentRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 import org.sj.punidos.crminer.sectorizer.RegionCluster;
 import org.sj.punidos.crminer.tablemkr.Line;
+import org.sj.punidos.crminer.tablemkr.Table;
 import org.sj.punidos.crminer.tablemkr.TableMaker;
 
 /**
@@ -69,7 +75,7 @@ import org.sj.punidos.crminer.tablemkr.TableMaker;
  * 
  * @author John Hewson
  */
-public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
+public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implements CommonInfo
 {
 	
 	/*
@@ -96,33 +102,15 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
 	TableMaker tmaker = new TableMaker();
 	
-	
-   /*
-    public static void main(String[] args) throws IOException
-    {
-        File file = new File("res/CEPI-1-1.pdf");
-        PDDocument doc = PDDocument.load(file);
-        PDPage page = doc.getPage(0);
-        //CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
-        // 108,0,720,583
-        CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page,
-        		new Rectangle(0,108,583, 720-108));
-        engine.run();
-        doc.close();
-        //System.out.println("------------------");
-        //System.out.println(engine.cluster.toHTML());
-        
-        //engine.writeHTML("out/doc1.htm");
-    }
-    */
-    
     
     public void writeHTML(String filename) throws IOException {
     	File f = new File(filename);
     	FileOutputStream fos = new FileOutputStream(f);
-    	//String s = cluster.toHTML();
-    	String s = "TODO";
+    	Table t = tmaker.makeTable();
+    	String s = t.toHTML();
+    	fos.write("<html><body>".getBytes());
     	fos.write(s.getBytes());
+    	fos.write("</body></html>".getBytes());
     	fos.close();
     	
     }
@@ -174,9 +162,40 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     	System.out.println("strokes:"+strokeCount);
     	System.out.println("lines:"+lineCount);
     	System.out.println("rectangles:"+rectCount);
+    	System.out.println("size H:"+getPage().getBBox().getHeight());
     }
     
- 
+    public double transf_Yd(double y) {
+    	PDRectangle r = getPage().getBBox();
+    	return r.getHeight() - y;
+    }
+
+    public float transf_Yf(float y) {
+    	PDRectangle r = getPage().getBBox();
+    	return r.getHeight() - y;
+    }
+    
+    public Point2D transform(Point2D p) {
+    	if(p instanceof Point2D.Float) {
+    		return new Point2D.Float((float) p.getX(), transf_Yf((float)p.getY()));
+    	} else {
+    		return new Point2D.Double(p.getX(), transf_Yd(p.getY()));
+    	}
+    }
+    
+    public Line buildLine(Point2D a, Point2D b) {
+    	//return new Line(transform(a), transform(b));
+    	return new Line(a, b);
+    }
+
+    public Rectangle transfRect(Rectangle r) {
+    	//Rectangle z = new Rectangle(1,2,3,4);
+    	
+    	/*return new Rectangle((int) r.getX(), (int) transf_Yd(r.getY()),
+    			(int) r.getWidth(), (int) r.getHeight());*/
+    	return r;
+    }
+
     
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
@@ -193,10 +212,10 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
                     p0.getX(), p0.getY(), p1.getX(), p1.getY(),
                     p2.getX(), p2.getY(), p3.getX(), p3.getY());
             /* add rectangle */
-            tmaker.add(new Line(p0, p1));
-            tmaker.add(new Line(p1, p2));
-            tmaker.add(new Line(p2, p3));
-            tmaker.add(new Line(p3, p0));
+            tmaker.add(buildLine(p0, p1));
+            tmaker.add(buildLine(p1, p2));
+            tmaker.add(buildLine(p2, p3));
+            tmaker.add(buildLine(p3, p0));
             
             rectCount++;
 
@@ -243,6 +262,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     	//region.add(new Point((int)x3,(int)y3));
     	System.out.printf("curveTo %.2f %.2f, %.2f %.2f, %.2f %.2f\n", x1, y1, x2, y2, x3, y3);
     }
+    
     @Override
     public Point2D getCurrentPoint() throws IOException
     {
@@ -278,7 +298,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	Iterable<Line2D> lines = path.getIterable();
 	int linCnt = 0;
 	for(Line2D l : lines) {
-	    tmaker.add(new Line(l.getP1(), l.getP2()));
+	    tmaker.add(buildLine(l.getP1(), l.getP2()));
 	    linCnt++;
 	}
 	strokeCount += linCnt;
@@ -296,22 +316,47 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     {
         System.out.println("fillAndStrokePath");
     }
+    
     @Override
     public void shadingFill(COSName shadingName) throws IOException
     {
         System.out.println("shadingFill " + shadingName.toString());
     }
+    
+    
+    static void dbg_showbytes(byte data[]) {
+    	for(byte b: data) {
+    		System.out.println(String.format("0x%x ",b));
+    	}
+    	
+		System.out.println();
+    }
+    
     /**
      * Overridden from PDFStreamEngine.
      */
+    
+    
     @Override
     public void showTextString(byte[] string) throws IOException
     {
         System.out.print("showTextString \"");
         super.showTextString(string);
         System.out.println("\"");
+        //COSArray str = new COSArray();
         
+        Rectangle r = regionText.getRegion();
+        if(r == null) {
+        	System.err.println("No region");
+        	throw new NullPointerException("regionText.region");
+        }
+        tmaker.add(new GraphicString(regionText.getText(), r));
+        System.out.println("  -REG:"+regionText.getText());
+         
+        regionText.reset();
     }
+	
+
     /**
      * Overridden from PDFStreamEngine.
      */
@@ -323,12 +368,15 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         regionText.reset();
         super.showTextStrings(array);
 
-	Rectangle r = regionText.getRegion();
-	if(r == null)
-	    throw new NullPointerException("regionText.region");
+        Rectangle r = regionText.getRegion();
+        if(r == null) {
+        	System.err.println("No region");
+        	throw new NullPointerException("regionText.region");
+        }
         tmaker.add(new GraphicString(regionText.getText(), r));
         System.out.println(regionText.getText());
-      System.out.println("\"");
+        System.out.println("\"");
+        //System.out.println("  "+r.toString());
   
     }
     /**
@@ -339,6 +387,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
                              Vector displacement) throws IOException
     {
         System.out.print(unicode);
+
         //showVector(displacement);
         //Vector w = font.getDisplacement(code);
        	//showVector(w);
@@ -352,7 +401,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         bbox = at.createTransformedShape(bbox);
         
         regionText.add(unicode);
-        regionText.add(bbox.getBounds());
+        regionText.add(transfRect(bbox.getBounds()));
 
     }
     
