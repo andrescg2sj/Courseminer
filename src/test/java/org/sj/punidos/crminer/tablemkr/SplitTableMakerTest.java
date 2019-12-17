@@ -11,10 +11,10 @@ import org.sj.punidos.crminer.tablemkr.Area;
 import org.sj.punidos.crminer.tablemkr.Line;
 import org.sj.punidos.crminer.tablemkr.RectArea;
 import org.sj.punidos.crminer.tablemkr.Table;
-import org.sj.punidos.crminer.tablemkr.TableMaker;
+import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 import org.junit.Test;
 
-public class TableMakerTest {
+public class SplitTableMakerTest {
 	
 	public static Line[] strokesExample1() {
 		Line strokes[] = new Line[4];
@@ -74,7 +74,7 @@ public class TableMakerTest {
 		
 		Line strokes[] = strokesExample1();
 
-		TableMaker maker = new TableMaker();
+		SplitTableMaker maker = new SplitTableMaker();
 		
 		for(Line s: strokes) {
 			maker.add(s);
@@ -90,7 +90,7 @@ public class TableMakerTest {
 	public void testingContent() {
 		
 		Line strokes[] = strokesExample2();
-		TableMaker maker = new TableMaker();
+		SplitTableMaker maker = new SplitTableMaker();
 		
 		GraphicString s1 = new GraphicString("A", new Rectangle(15,20,15,20));
 		GraphicString s2 = new GraphicString("B", new Rectangle(60,20,40,40));
@@ -116,7 +116,7 @@ public class TableMakerTest {
 		
 		//Line strokes[] = strokesExample1();
 
-		TableMaker maker = new TableMaker();
+		SplitTableMaker maker = new SplitTableMaker();
 		
 		for(Line s: strokes) {
 			maker.add(s);

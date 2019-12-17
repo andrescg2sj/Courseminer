@@ -25,22 +25,29 @@ public class Frame {
     	return i-1;
     }
     
+    int reverseIndexY(int i) {
+    	return y.length-1-i;
+    }
+    
     static int getFirstIndexAbove(double value, int marks[])
     {
     	return 1 + getLastIndexBelow(value, marks);
     }
     
     public CellLocation rectToLoc(Rectangle2D rect, double threshold) {
-
+    	//TODO: reverse max & min Y
     	int x_index = getLastIndexBelow(rect.getX()+threshold, this.x);
 		int y_index = getLastIndexBelow(rect.getY()+threshold, this.y);
 		int max_x_index = getFirstIndexAbove(rect.getMaxX()-threshold, this.x);
 		int max_y_index = getFirstIndexAbove(rect.getMaxY()-threshold, this.y);
 		int horizSpan = max_x_index - x_index;
 		int vertSpan = max_y_index - y_index;
+		
+		//TODO: y = reverseIndexY(max_y_index)
 
-		return new CellLocation(x_index, y_index, horizSpan, vertSpan);
-    	
+		//return new CellLocation(x_index, y_index, horizSpan, vertSpan);
+		return new CellLocation(x_index, reverseIndexY(max_y_index), horizSpan, vertSpan);
+	    	
     }
     
     public CellLocation textLocation(GraphicString gstr, double threshold) {

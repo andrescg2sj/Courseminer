@@ -4,8 +4,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-
+import static java.util.stream.Collectors.toList;
 
 public class ContentRegion implements Positionable {
 
@@ -32,6 +33,11 @@ public class ContentRegion implements Positionable {
 				(int) (z.getX()-a.getX()), (int) (z.getY()-a.getY()));
 		
 	}
+	
+	public boolean isEmpty() 
+	{
+		return strings.isEmpty();
+	}
 
 	
 	public ContentRegion(Rectangle r) {
@@ -52,7 +58,16 @@ public class ContentRegion implements Positionable {
 		strings.add(gs);
 	}
 	
-	Vector<GraphicString> getStrings() {
+	//public static String getText(GraphicsString )
+	
+	List<String> getStrings() 
+	{
+		// https://www.java67.com/2015/01/java-8-map-function-examples.html
+		return strings.stream().map(GraphicString::getText).collect(toList());
+	}
+
+	
+	Vector<GraphicString> getGraphicStrings() {
 		return strings;
 	}
 

@@ -16,6 +16,16 @@ public class Course {
 		return in;
 	}
 	
+	public Course(String _name, String _date, String _hours) {
+		this.name = _name;
+		this.date = _date;
+		if(_hours != null) {
+			this.hours = _hours.trim();
+			parseHours();
+		}
+	}
+
+	
 	public Course(String _name, String _date, String _hours, String _register) {
 		this.name = _name;
 		this.date = _date;

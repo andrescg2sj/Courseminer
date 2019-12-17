@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 //import org.sj.punidos.crminer.omio.pdfboximpl.beta.PDFString;
@@ -51,10 +53,67 @@ public class RegionCluster {
 		regions.add(cr);
 	}
 	
+	//TODO: better name
+	public static boolean previous(ContentRegion a, ContentRegion b) {
+		return (a.getPosition().getY() < b.getPosition().getY()) ||
+				(a.getPosition().getY() == b.getPosition().getY()) &&
+				(a.getPosition().getX() > b.getPosition().getX());
+	
+	}
+
+	
+	public void filterOutEmptyRegions() 
+	{
+		int i = 0;
+		while(i < regions.size()) {
+			ContentRegion r = regions.get(i);
+			if(r.isEmpty()) {
+				regions.removeElementAt(i);
+			} else {
+				i++;
+			}
+		}
+	}
+	
+	public static <E> void swap(Vector<E> v, int i, int j) {
+		E s = v.get(i);
+		v.set(i, v.get(j));
+		v.set(j, s);
+	}
+	
+	public void sortRegions() {
+		//TODO: See https://stackoverflow.com/questions/2072032/what-function-can-be-used-to-sort-a-vector
+		// See Comparable, Comparator
+		
+		/* bubble algorithm. Low efficiency, but acceptable for this purpose */
+		for(int i=0; i< regions.size(); i++) {
+			ContentRegion r = regions.get(i);
+			for(int j=i+1; j<regions.size();j++) {
+				ContentRegion s = regions.get(j);
+					
+				if(previous(r,s)) {
+					//FIXME: Is this clear enough? Good design?
+					swap(regions,i,j);
+					r = regions.get(i);
+				}
+			}
+			
+		}
+		
+	}
+	
+	public List<String> allStrings() {
+		List<String> all = new LinkedList<String>();
+		for(ContentRegion r: regions) {
+			all.addAll(r.getStrings());
+		}
+		return all;
+	}
+	
 	public String regionToHTML(ContentRegion cr) {
 		StringBuilder s = new StringBuilder();
 		s.append("<div style=\"border-style: solid;\">\n");
-		for(GraphicString g: cr.getStrings()) {
+		for(GraphicString g: cr.getGraphicStrings()) {
 			s.append(g.getText()+"<br/>\n");
 		}
 		
@@ -64,6 +123,8 @@ public class RegionCluster {
 	}
 	
 	public String toHTML() {
+		filterOutEmptyRegions();
+		sortRegions();
 		StringBuilder s = new StringBuilder();
 		for(ContentRegion r: regions) {
 			s.append(regionToHTML(r));
