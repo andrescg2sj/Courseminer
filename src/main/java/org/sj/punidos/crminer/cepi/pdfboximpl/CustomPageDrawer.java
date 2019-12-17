@@ -1,4 +1,4 @@
-package org.sj.punidos.crminer.omio.pdfboximpl.beta;
+
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -16,13 +16,14 @@ package org.sj.punidos.crminer.omio.pdfboximpl.beta;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package org.apache.pdfbox.examples.rendering;
-import java.util.Random;
+
+package org.sj.punidos.crminer.cepi.pdfboximpl;
+
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -30,23 +31,18 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
-
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.rendering.PageDrawerParameters;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
-import org.sj.punidos.crminer.sectorizer.GStringBuffer;
+
 /**
  * Example showing custom rendering by subclassing PageDrawer.
  * 
@@ -58,19 +54,19 @@ import org.sj.punidos.crminer.sectorizer.GStringBuffer;
  */
 public class CustomPageDrawer
 {
-	
-	
-	
     public static void main(String[] args) throws IOException
     {
-        File file = new File("res/CEPI-1-1.pdf");
+        File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
+                             "custom-render-demo.pdf");
         
-        PDDocument doc = PDDocument.load(file);
-        PDFRenderer renderer = new MyPDFRenderer(doc);
-        BufferedImage image = renderer.renderImage(0);
-        ImageIO.write(image, "PNG", new File("out/custom-render.png"));
-        doc.close();
+        try (PDDocument doc = PDDocument.load(file))
+        {
+            PDFRenderer renderer = new MyPDFRenderer(doc);
+            BufferedImage image = renderer.renderImage(0);
+            ImageIO.write(image, "PNG", new File("custom-render.png"));
+        }
     }
+
     /**
      * Example PDFRenderer subclass, uses MyPageDrawer for custom rendering.
      */
@@ -80,24 +76,24 @@ public class CustomPageDrawer
         {
             super(document);
         }
+
         @Override
         protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
         {
             return new MyPageDrawer(parameters);
         }
     }
+
     /**
      * Example PageDrawer subclass with custom rendering.
      */
     private static class MyPageDrawer extends PageDrawer
     {
-    	GStringBuffer buffer;
-    	
         MyPageDrawer(PageDrawerParameters parameters) throws IOException
         {
             super(parameters);
-            buffer = new GStringBuffer();
         }
+
         /**
          * Color replacement.
          */
@@ -116,44 +112,7 @@ public class CustomPageDrawer
             }
             return super.getPaint(color);
         }
-        
-        @Override
-        public void showTextStrings(COSArray array) throws IOException
-        {
-        	//PDGraphicsState state = getGraphicsState();
-            //PDTextState textState = state.getTextState();
-            
-            //System.out.print("showTextStrings \"");
-            //Matrix m = state.getCurrentTransformationMatrix();
-            //System.out.println(m.toString());
-        	buffer.reset();
-            super.showTextStrings(array);
-            
-            /* container box debug info */
-            Rectangle r = buffer.getRegion();
-            Graphics2D graphics = getGraphics();
-            drawShape(graphics, r);
-            //System.out.println("\"");
-        }
 
-        
-        
-        protected void drawShape(Graphics2D graphics, Shape s) {
-            // save
-            Color color = graphics.getColor();
-            Stroke stroke = graphics.getStroke();
-            Shape clip = graphics.getClip();
-            // draw
-            graphics.setClip(graphics.getDeviceConfiguration().getBounds());
-            graphics.setColor(Color.RED);
-            graphics.setStroke(new BasicStroke(.5f));
-            graphics.draw(s);
-            // restore
-            graphics.setStroke(stroke);
-            graphics.setColor(color);
-            graphics.setClip(clip);
-       }
-        
         /**
          * Glyph bounding boxes.
          */
@@ -169,17 +128,24 @@ public class CustomPageDrawer
             AffineTransform at = textRenderingMatrix.createAffineTransform();
             bbox = at.createTransformedShape(bbox);
             
-            //Graphics2D graphics = getGraphics();
-            //drawShape(graphics, bbox);
-            buffer.add( bbox.getBounds());
-       }
-        
-        
-       Color getRandomColor() {
-           Random r = new Random(new java.util.Date().getTime());
-           return new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
-       }
-       
+            // save
+            Graphics2D graphics = getGraphics();
+            Color color = graphics.getColor();
+            Stroke stroke = graphics.getStroke();
+            Shape clip = graphics.getClip();
+
+            // draw
+            graphics.setClip(graphics.getDeviceConfiguration().getBounds());
+            graphics.setColor(Color.RED);
+            graphics.setStroke(new BasicStroke(.5f));
+            //graphics.draw(bbox);
+
+            // restore
+            graphics.setStroke(stroke);
+            graphics.setColor(color);
+            graphics.setClip(clip);
+        }
+
         /**
          * Filled path bounding boxes.
          */
@@ -197,19 +163,19 @@ public class CustomPageDrawer
             Color color = graphics.getColor();
             Stroke stroke = graphics.getStroke();
             Shape clip = graphics.getClip();
+
             // draw
             graphics.setClip(graphics.getDeviceConfiguration().getBounds());
-            //graphics.setColor(Color.GREEN);
-            graphics.setColor(getRandomColor());
+            graphics.setColor(Color.GREEN);
             graphics.setStroke(new BasicStroke(.5f));
             graphics.draw(bbox);
+
             // restore
             graphics.setStroke(stroke);
             graphics.setColor(color);
             graphics.setClip(clip);
-            
-            
         }
+
         /**
          * Custom annotation rendering.
          */
@@ -220,7 +186,7 @@ public class CustomPageDrawer
             saveGraphicsState();
             
             // 35% alpha
-            getGraphicsState().setNonStrokeAlphaConstants(0.35);
+            getGraphicsState().setNonStrokeAlphaConstant(0.35);
             super.showAnnotation(annotation);
             
             // restore
