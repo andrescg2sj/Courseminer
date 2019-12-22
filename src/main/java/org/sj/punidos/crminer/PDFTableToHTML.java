@@ -37,11 +37,15 @@ public class PDFTableToHTML implements CommonInfo
     		 dir.mkdirs();
     	 }
     }
+    
+    public static void test1() {
+    	//Rectangle clipArea = new Rectangle(0,108,583, 720-108);
+
+    }
 
 
     public static void main(String args[]) {
 	String path = DEFAULT_PATH;
-	//Rectangle clipArea = new Rectangle(0,108,583, 720-108);
 	Rectangle clipArea = null;
 	
 	
@@ -67,7 +71,7 @@ public class PDFTableToHTML implements CommonInfo
 	    //System.out.println("------------------");
 	    //System.out.println(engine.cluster.toHTML());
         
-	    engine.writeHTML(DST_PATH + "doc1.htm");
+	    engine.writeHTML(DST_PATH + "doc"+Utils.getTimestamp()+".htm");
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

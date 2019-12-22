@@ -27,16 +27,16 @@ import org.sj.punidos.crminer.sectorizer.GraphicString;
 public class Cell {
 	
 
-	int horizSpan = 1;
-	int vertSpan = 1;
+	int colSpan = 1;
+	int rowSpan = 1;
 	
 	//TODO: What class?
 	Vector<GraphicString> contents;
 	//String content;
 	
 	public Cell(int hspan, int vspan) {
-		horizSpan = hspan;
-		vertSpan = vspan;
+		colSpan = hspan;
+		rowSpan = vspan;
 		contents = new Vector<GraphicString>();
 	}
 	

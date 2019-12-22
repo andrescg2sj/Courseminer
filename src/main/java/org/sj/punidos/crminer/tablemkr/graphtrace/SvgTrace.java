@@ -22,16 +22,14 @@ package org.sj.punidos.crminer.tablemkr.graphtrace;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.Point;
-import java.util.Date;
 import java.util.Vector;
 import java.util.Iterator;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import org.sj.punidos.crminer.tablemkr.Area;
 import org.sj.punidos.crminer.CommonInfo;
+import org.sj.punidos.crminer.Utils;
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 import java.util.Locale;
 
@@ -50,10 +48,8 @@ public class SvgTrace implements CommonInfo {
     
 
     public String generateLogFilename() {
-	DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
-	Date date = new Date();
-	String timestamp = dateFormat.format(date); 
-	return DST_PATH + "log" + timestamp +".svg";
+    	String timestamp = Utils.getTimestamp();
+    	return DST_PATH + "log" + timestamp +".svg";
     }
 
     public void exportAreasAndGStrings(Vector<Area> areas,

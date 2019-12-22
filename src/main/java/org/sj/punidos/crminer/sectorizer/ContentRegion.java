@@ -83,6 +83,8 @@ public class ContentRegion implements Positionable {
 	List<String> getStrings() 
 	{
 		// https://www.java67.com/2015/01/java-8-map-function-examples.html
+		//TODO: This is the only piece of code that requires Java 8.
+		//TODO: Consider target compiler configuration.
 		return strings.stream().map(GraphicString::getText).collect(toList());
 	}
 

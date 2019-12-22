@@ -46,5 +46,36 @@ public abstract class TableMaker
     }
 
     public abstract Table makeTable();
+    
+    Frame buildFrame() {
+    	/* convenience array that stores all marks */
+    	int i=0;
+    	int j = lines.size()-1;
+    	int allMarks[] = new int[lines.size()];
+    	for(Line l: lines) {
+    		if(l.isHoriz()) {
+    			System.out.println(l.toString() + " is horziontal.");
+    			allMarks[i++] = (int) l.getA().getY();
+    			
+    		} else {
+    			System.out.println(l.toString() + " is vertical.");
+    			allMarks[j--] = (int) l.getA().getX();
+    		}
+    	}
+    	//int x[] = new int[i];
+    	//int y[] = new int[allMarks.length - i];
+    	System.out.println(String.format("lines.size=%d, i=%d, j=%d", lines.size(), i,j));
+    	System.out.println(String.format("marks.length=%d", allMarks.length));
+    	int x[] = Arrays.copyOfRange(allMarks, i, allMarks.length);
+    	if(x.length != j) {
+    		System.err.println("Warning! x.length="+x.length);
+    	}
+    	int y[] = Arrays.copyOf(allMarks, i);
+    	Arrays.sort(x);
+    	Arrays.sort(y);
+    	
+    	return new Frame(x,y);
+    }
+
 
 }

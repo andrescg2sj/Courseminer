@@ -33,8 +33,14 @@ public class CellLocation {
 		row = r;
 		col = c;
 		cell = new Cell(hspan, vspan);
-		
 	}
+
+	public CellLocation(int c, int r, Cell referenced) {
+		row = r;
+		col = c;
+		cell = referenced;
+	}
+
 	
 	public String toString() {
 		return String.format("cell(%d,%d,{%s})", row, col, cell.toString());
@@ -56,8 +62,8 @@ public class CellLocation {
 	public boolean contains(CellLocation cloc) 
 	{
 		return ((cloc.getRow() >= this.getRow()) && (cloc.getCol() >= this.getCol()) &&
-			((cloc.getRow()+cloc.cell.vertSpan) <= (this.getRow()+this.cell.vertSpan))  && 
-			((cloc.getCol()+cloc.cell.horizSpan) <= (this.getCol()+this.cell.horizSpan)) );
+			((cloc.getRow()+cloc.cell.rowSpan) <= (this.getRow()+this.cell.rowSpan))  && 
+			((cloc.getCol()+cloc.cell.colSpan) <= (this.getCol()+this.cell.colSpan)) );
 	}
 	
 	
