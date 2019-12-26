@@ -47,17 +47,5 @@ Fases del proyecto.
 2. Extraer datos de los documentos de una OMIO y exportarlos a un docuemnto Excel.
 3. Desarrollar *web scrappers* para distintas fuentes de cursos en la web.
 
-Primera fase. Extraer datos de un CEPI
----
 
-Las próximas tareas a realizar en el proyecto, por orden de prioridad son las siguientes:
-
-1. Terminar y depurar `org.sj.punidos.crminer.PDFTableToHTML`.
-   * Desarrollar la funcionalidad de leer un documento PDF que contiene una tabla de cursos de un CEPI, crear al menos un objeto de clase `Table` con su contenido, y mostrarlo en formato HTML.
-   * Terminar y depurar la funcionalidad de recorte (clipping).
-2. Desarrollar la funcionalidad de agrupar objetos gráficos para distungir múltiples tablas en una página.
-3. Terminar la clase `org.sj.punidos.crminer.courses.Course`.
-4. Desarrollar la funcionalidad de rellenar los datos de un objeto de clase `Course` a partir los datos del documentod de un CEPI.
-5. Integrar la funcionalidad de exportar objetos `Course` a un fichero excel.
-
-
+[Más detalles...](https://github.com/andrescg2sj/Courseminer/wiki)
