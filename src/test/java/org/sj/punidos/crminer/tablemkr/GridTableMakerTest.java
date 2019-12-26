@@ -33,14 +33,14 @@ public class GridTableMakerTest {
 		Grid g = new Grid(2,2);
 		g.setAll();
 		
-		Table t = GridTableMaker.makeFromGrid(g);
+		Table t = GridTableMaker.fromGrid(g);
 		assertEquals("full table. colSpan", 1,t.getCell(0, 0).colSpan);
 		assertEquals("full table. rowSpan", 1,t.getCell(0, 0).rowSpan);
 		
 		g.setRight(0,0,false);
 		assertEquals("right", false,g.getRight(0, 0));
 
-		t = GridTableMaker.makeFromGrid(g);
+		t = GridTableMaker.fromGrid(g);
 		assertEquals("table. colSpan", 2,t.getCell(0, 0).colSpan);
 		assertEquals("table. rowSpan", 1,t.getCell(0, 0).rowSpan);
 		

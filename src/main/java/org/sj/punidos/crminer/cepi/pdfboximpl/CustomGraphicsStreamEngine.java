@@ -63,9 +63,11 @@ import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.sectorizer.ContentRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 import org.sj.punidos.crminer.sectorizer.RegionCluster;
+import org.sj.punidos.crminer.tablemkr.GridTableMaker;
 import org.sj.punidos.crminer.tablemkr.Line;
 import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 import org.sj.punidos.crminer.tablemkr.Table;
+import org.sj.punidos.crminer.tablemkr.TableMaker;
 import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 
 /**
@@ -90,6 +92,17 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 	 * https://apache.googlesource.com/pdfbox/+/a3241d612d3ae387525d58d64b93b7804dde5939/pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFGraphicsStreamEngine.java
 	 */
 	
+	public static final String HTML_HEAD = 
+			"<html><head>"
+			+ "<style>table {\r\n" + 
+			"  border-collapse: collapse;\r\n" + 
+			"}\r\n" + 
+			"\r\n" + 
+			"table, th, td {\r\n" + 
+			"  border: 1px solid black;\r\n" + 
+			"}</style>"
+			+ "</head>";
+	
     GStringBuffer regionText = new GStringBuffer();
 	//RegionCluster cluster;
 	
@@ -101,7 +114,8 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     GrPath path = new GrPath();
 	
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
-	SplitTableMaker tmaker = new SplitTableMaker();
+	//TableMaker tmaker = new SplitTableMaker();
+    TableMaker tmaker = new GridTableMaker();
 	
     
     public void writeHTML(String filename) throws IOException {
@@ -109,7 +123,8 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	FileOutputStream fos = new FileOutputStream(f);
     	Table t = tmaker.makeTable();
     	String s = t.toHTML();
-    	fos.write("<html><body>".getBytes());
+    	
+    	fos.write((HTML_HEAD + "<body>").getBytes());
     	fos.write(s.getBytes());
     	fos.write("</body></html>".getBytes());
     	fos.close();
@@ -154,9 +169,9 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
             showAnnotation(annotation);
         }
         showStats();
-        java.util.Vector<org.sj.punidos.crminer.tablemkr.Area> areas = tmaker.buildAreas();
+        //java.util.Vector<org.sj.punidos.crminer.tablemkr.Area> areas = tmaker.buildAreas();
         //logAreas(areas);
-        tmaker.toSVG(areas);
+        //tmaker.toSVG(areas);
     }
     
     void showStats() {

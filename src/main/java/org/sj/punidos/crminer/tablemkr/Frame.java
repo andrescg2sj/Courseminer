@@ -34,11 +34,41 @@ public class Frame {
 		y = _y;
 	}
 	
+	public static void logArray(String title, int values[]) 
+	{
+		System.out.println(title + ": ");
+		for(int v: values) {
+			System.out.print(" "+v);
+		}
+		System.out.println();
+
+	}
+	
+	public void log() {
+		System.out.println("Frame:");
+		logArray("x", x);
+		logArray("y", y);
+	}
+	
     static int getLastIndexBelow(double value, int marks[]) 
     {
     	int i=0;
-    	if(value < marks[0]) throw new IllegalArgumentException("Value is too low.");
-    	if(value > marks[marks.length-1]) throw new IllegalArgumentException("Value is too high.");
+    	if(value < marks[0]) {
+    		//throw new IllegalArgumentException("Value is too low:" +value);
+    		//TODO: log
+    		System.err.println("Value is too low: "+value
+    				+ ". Min is: "+marks[0]);
+    		return 0;
+    	}
+    	
+    	if(value > marks[marks.length-1]) {
+    		/*throw new IllegalArgumentException*/
+    		//TODO: log
+    		System.err.println("Value is too high: "+value
+    				+ ". Max is: "+marks[marks.length-1]);
+    		//FIXME
+    		return marks.length-1;
+    	}
     	while((i <= marks.length) && (marks[i] < value)) {
     		i++;
     	}
@@ -46,7 +76,7 @@ public class Frame {
     }
     
     int reverseIndexY(int i) {
-    	return y.length-1-i;
+    	return y.length-2-i;
     }
     
     static int getFirstIndexAbove(double value, int marks[])
@@ -59,24 +89,55 @@ public class Frame {
 		int y_index = getLastIndexBelow(rect.getY()+threshold, this.y);
 		int max_x_index = getFirstIndexAbove(rect.getMaxX()-threshold, this.x);
 		int max_y_index = getFirstIndexAbove(rect.getMaxY()-threshold, this.y);
-		int horizSpan = max_x_index - x_index;
+		int horizSpan = max_x_index- x_index;
 		int vertSpan = max_y_index - y_index;
+		
+		System.out.println(String.format("y_index:%d max_y_index:%d\n",
+				y_index, max_y_index));
+		System.out.println(String.format("rev(max_y_index):%d\n",
+				reverseIndexY(max_y_index-1)));
+
 		
 
 		//return new CellLocation(x_index, y_index, horizSpan, vertSpan);
-		return new CellLocation(x_index, reverseIndexY(max_y_index), horizSpan, vertSpan);
+		return new CellLocation(x_index, reverseIndexY(max_y_index-1), horizSpan, vertSpan);
     }
     
-    public CellLocation lineToLoc(Line line, double threshold) {
+    public CellLocation horizLineToLoc(Line line, double threshold) {
+    	/* FIXME: Sometimes pushes values out of table limits. */
     	int x_index = getLastIndexBelow(line.getA().getX()+threshold, this.x);
-		int y_index = getLastIndexBelow(line.getA().getY()+threshold, this.y);
+		int y_index = getLastIndexBelow(line.getA().getY()-threshold, this.y);
 		int max_x_index = getFirstIndexAbove(line.getB().getX()-threshold, this.x);
-		int max_y_index = getFirstIndexAbove(line.getB().getY()-threshold, this.y);
+		//int max_y_index = getFirstIndexAbove(line.getB().getY()-threshold, this.y);
 		int horizSpan = max_x_index - x_index;
+		int vertSpan = 0;
+		System.out.println(String.format("y_index:%d\n", y_index));
+
+		return new CellLocation(x_index, reverseIndexY(y_index), horizSpan, vertSpan);
+    }
+    
+    public CellLocation vertLineToLoc(Line line, double threshold) {
+    	/* FIXME: Sometimes pushes values out of table limits. */
+
+    	int x_index = getLastIndexBelow(line.getA().getX()-threshold, this.x);
+		int y_index = getLastIndexBelow(line.getA().getY()+threshold, this.y);
+		//int max_x_index = getFirstIndexAbove(line.getB().getX()-threshold, this.x);
+		int max_y_index = getFirstIndexAbove(line.getB().getY()-threshold, this.y);
+		int horizSpan = 0;
 		int vertSpan = max_y_index - y_index;
+		System.out.println(String.format("y_index:%d max_y_index:%d\n",
+				y_index, max_y_index));
 
-		return new CellLocation(x_index, reverseIndexY(max_y_index), horizSpan, vertSpan);
 
+		return new CellLocation(x_index, reverseIndexY(max_y_index-1), horizSpan, vertSpan);
+    }
+
+    
+    public CellLocation lineToLoc(Line line, double threshold) {
+    	if(line.isHoriz()) {
+    		return horizLineToLoc(line,threshold);
+    	}
+    	return vertLineToLoc(line, threshold);
     }
     
     
@@ -102,6 +163,17 @@ public class Frame {
 	public int numCols()
 	{
 		return x.length - 1;
+	}
+	
+	public Area cellToArea(int col, int row, int colSpan, int rowSpan) {
+		double min_x = x[col]; 
+		System.out.println(String.format("row:%d, inverse:%d", row, reverseIndexY(row)));
+		double min_y = y[reverseIndexY(row)]; 
+		double max_x = x[col+colSpan]; 
+		System.out.println(String.format("last_row:%d, inverse:%d", row+rowSpan-1, reverseIndexY(row+rowSpan-1)));
+		double max_y = y[reverseIndexY(row+rowSpan-1)+1];
+		return new RectArea(min_x, min_y, max_x-min_x, max_y-min_y);
+				
 	}
 
 	

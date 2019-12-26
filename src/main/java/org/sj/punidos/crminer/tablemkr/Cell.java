@@ -78,6 +78,8 @@ public class Cell {
 		return contents.get(i).getText();
 	}
 	
-	
+	public String toString() {
+		return String.format("Cell{size:%d,%d}", colSpan, rowSpan);
+	}
 	
 }

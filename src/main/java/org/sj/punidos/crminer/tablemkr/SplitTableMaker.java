@@ -21,15 +21,6 @@ public class SplitTableMaker extends TableMaker {
     	}
     }
     
-    public void add(Line line) {
-    	lines.add(line);
-    }
-    
-    public void add(GraphicString gstr) {
-    	gstrings.add(gstr);
-    }
-    
-    
     
     public Table makeTable()
     {
@@ -71,30 +62,10 @@ public class SplitTableMaker extends TableMaker {
     	return table;
     }
     
-    boolean addStringToOneArea(Vector<Area> areas, GraphicString gstr) {
-		for(Area a: areas) {
-			if(a.contains(gstr.getBounds())) {
-				a.addContent(gstr);
-				return true;
-			}
-		}
-    	return false;
-    }
-    
-    void addStringsToAreas(Vector<Area> areas) {
-    	int count = 0;
-    	for(GraphicString gstr: this.gstrings)
-    	{
-    		if(addStringToOneArea(areas, gstr)) count++;
-    	}
-    	System.out.println("added "+count+ " strings");
-    }
-
-    
     
     public Table areasToTable(Vector<Area> areas)
     {
-    	Frame frame = buildFrame();
+    	frame = buildFrame();
     	
     	int cols = frame.x.length - 1;
     	int rows = frame.y.length - 1;
@@ -107,30 +78,7 @@ public class SplitTableMaker extends TableMaker {
     	Cell table[][] = new Cell[rows][cols];
     	//CellLocation loctable[][] = new CellLocation[rows][cols];
 
-    	
-    	for(Area a: areas) {
-			System.out.println("Build location: " + a.toString());
-    		CellLocation clo = frame.areaToCellLoc(a, this.collisionThreshold);
-    		if(clo == null)
-    			throw new NullPointerException("Frame created a null CellLocation");
-    		try {
-				System.out.println("Testing:" + clo.row+","+clo.col);
-    			if(table[clo.row][clo.col] != null) {
-    				System.err.println("Warning! repeated.");
-    			} else {
-    				System.out.println("cell: "+clo.toString());
-    				System.out.println("   indices:" + clo.row+","+clo.col);
-    				table[clo.row][clo.col] = clo.cell;
-    				//loctable[clo.row][clo.col] = clo;
-    				/*fillSpan(loctable, clo, clo.col, clo.row,
-    						clo.cell.horizSpan, clo.cell.vertSpan);*/
-    				
-    			}
-    		} catch(Exception ie) {
-    			ie.printStackTrace();
-    		}
-    	}
-    	
+    	addAreasToMatrix(areas, table);
     	
     	return new Table(table);
     }
@@ -252,27 +200,6 @@ public class SplitTableMaker extends TableMaker {
     	}
     }
 
-    /**
-     * 
-     * For debug purposes.
-     * 
-     * @param areas
-     */
-    public void toSVG(Vector<Area> areas) {
-	System.out.println("Exporting areas.");
-	tracer.exportAreasAndGStrings(areas, gstrings);
-	System.out.println("   GStrings: "+gstrings.size());
-	//tracer.exportAreasAndText(areas,);
-    }
-
-    /*
-    public String toSVG(Area area) {
-    	Rectangle2D rect = area.getBounds();
-    	return String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"green\" stroke-width=\"3\" />\n", 
-    			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
-    }
-    */
-    
 
 
 
@@ -296,22 +223,5 @@ public class SplitTableMaker extends TableMaker {
     	}
     }
 
-    public static void main(String arg[]) {
-	System.out.println("Hello World Table Maker");
-
-	Line strokes[] = new Line[5];
-
-	strokes[0] = new Line(10,10,200,10);
-	strokes[1] = new Line(10,10,200,10);
-	strokes[2] = new Line(200,10,200,100);
-	strokes[3] = new Line(10,100,200,100);
-	strokes[4] = new Line(50,10,50,100);
-
-	SplitTableMaker maker = new SplitTableMaker();
-	Vector<Area> regions = maker.buildAreas(strokes);
-	System.out.println("Regions:");
-	show(regions);
-	
-    }
 
 }

@@ -33,6 +33,8 @@ public abstract class TableMaker
 {
     float collisionThreshold = 2;
     
+    Frame frame;
+    
     Vector<Line> lines;
     Vector<GraphicString> gstrings;
 
@@ -76,6 +78,78 @@ public abstract class TableMaker
     	
     	return new Frame(x,y);
     }
+    
+    public void add(Line line) {
+    	lines.add(line);
+    }
+    
+    public void add(GraphicString gstr) {
+    	gstrings.add(gstr);
+    }
+    
+    boolean addStringToOneArea(Vector<Area> areas, GraphicString gstr) {
+		for(Area a: areas) {
+			if(a.contains(gstr.getBounds())) {
+				a.addContent(gstr);
+				return true;
+			}
+		}
+    	return false;
+    }
+    
+    void addStringsToAreas(Vector<Area> areas) {
+    	int count = 0;
+    	for(GraphicString gstr: this.gstrings)
+    	{
+    		if(addStringToOneArea(areas, gstr)) count++;
+    	}
+    	System.out.println("added "+count+ " strings");
+    }
+    
+    /**
+     * 
+     * For debug purposes.
+     * 
+     * @param areas
+     */
+    public void toSVG(Vector<Area> areas) {
+    	System.out.println("Exporting areas.");
+    	tracer.exportAreasAndGStrings(areas, gstrings);
+    	System.out.println("   GStrings: "+gstrings.size());
+	//	tracer.exportAreasAndText(areas,);
+    }
+
+
+    public void addAreasToMatrix(Vector<Area> areas, Cell table[][])
+    {
+    	for(Area a: areas) {
+			System.out.println("Build location: " + a.toString());
+    		CellLocation clo = frame.areaToCellLoc(a, this.collisionThreshold);
+    		if(clo == null)
+    			throw new NullPointerException("Frame created a null CellLocation");
+    		try {
+				System.out.println("Testing:" + clo.row+","+clo.col);
+    			if(table[clo.row][clo.col] != null) {
+    				System.err.println("Warning! repeated.");
+    			} else {
+    				System.out.println("cell: "+clo.toString());
+    				System.out.println("   indices:" + clo.row+","+clo.col);
+    				table[clo.row][clo.col] = clo.cell;
+    				//loctable[clo.row][clo.col] = clo;
+    				/*fillSpan(loctable, clo, clo.col, clo.row,
+    						clo.cell.horizSpan, clo.cell.vertSpan);*/
+    				
+    			}
+    		} catch(Exception ie) {
+    			ie.printStackTrace();
+    		}
+    	}
+
+    }
+
+    
+    
+
 
 
 }
