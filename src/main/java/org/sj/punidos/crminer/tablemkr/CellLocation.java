@@ -43,7 +43,7 @@ public class CellLocation {
 
 	
 	public String toString() {
-		return String.format("cell(%d,%d,{%s})", row, col, cell.toString());
+		return String.format("cell(%d,%d,{%s})", col, row, cell.toString());
 	}
 	
 	public int getRow() {

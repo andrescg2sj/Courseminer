@@ -31,8 +31,18 @@ public class PDFString extends GraphicString {
 	
 	PDFont font;
 	
+	public PDFString(GraphicString gs, PDFont f) {
+		super(gs);
+		font = f;
+	}
+	
 	public PDFString(String t, Rectangle b, PDFont f) {
 		super(t, b);
 		font = f;
+	}
+
+	public PDFString(PDFString str) {
+		super(str);
+		font = str.font;
 	}
 }

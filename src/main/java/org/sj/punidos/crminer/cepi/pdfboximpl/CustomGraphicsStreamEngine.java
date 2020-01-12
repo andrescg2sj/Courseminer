@@ -71,12 +71,7 @@ import org.sj.punidos.crminer.tablemkr.TableMaker;
 import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 
 /**
- * Example of a custom PDFGraphicsStreamEngine subclass. Allows text and graphics to be processed
- * in a custom manner. This example simply prints the operations to stdout.
- *
- * <p>See {@link PDFStreamEngine} for further methods which may be overridden.
  * 
- * @author John Hewson
  */
 public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implements CommonInfo
 {

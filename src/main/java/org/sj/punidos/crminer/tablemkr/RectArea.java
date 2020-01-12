@@ -167,11 +167,11 @@ public  class RectArea extends Area
 
 	@Override
 	public boolean contains(Rectangle r) {
-		System.out.println("RectArea.contains");
-		System.out.println("   this: "+ bounds);
-		System.out.println("      r: "+ r);
+		//System.out.println("RectArea.contains");
+		//System.out.println("   this: "+ bounds);
+		//System.out.println("      r: "+ r);
 		boolean test = bounds.contains(r);
-		System.out.println("      result: "+ test);
+		//System.out.println("      result: "+ test);
 		return test;
 	}
 

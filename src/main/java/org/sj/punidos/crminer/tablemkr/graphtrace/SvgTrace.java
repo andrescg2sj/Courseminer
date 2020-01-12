@@ -102,17 +102,27 @@ public class SvgTrace implements CommonInfo {
     
     public String gstrToSvg(GraphicString gstr) {
 	Point p = gstr.getPosition();
-	return  String.format(Locale.ROOT, "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\">%s</text>",
-			      p.getX(), p.getY(), gstr.getText());
+	String svgBounds = svgRectangle(gstr.getBounds(),"red"); 
+	String svgText = String.format(Locale.ROOT, "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\">%s</text>",
+		      p.getX(), p.getY(), gstr.getText()); 
+	return  svgBounds+ NEW_LINE+ svgText + NEW_LINE;
  
+    }
+
+    public String svgRectangle(Rectangle2D rect) {
+    	return svgRectangle(rect, "green");
+    }
+    
+    public String svgRectangle(Rectangle2D rect, String color) {
+    	return String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"%s\" stroke-width=\"3\" />"+NEW_LINE, 
+    			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), color);
     }
 
     public String areaToSvg(Area area, Rectangle2D bounds) {
 	
 	Rectangle2D rect = area.getBounds();
 	bounds.add(rect);
-	String xml = String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"green\" stroke-width=\"3\" />"+NEW_LINE, 
-    			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	String xml = svgRectangle(rect);
 	Iterator<GraphicString> cnt = area.getContents();
 	while(cnt.hasNext()) {
 	    GraphicString gstr = cnt.next();

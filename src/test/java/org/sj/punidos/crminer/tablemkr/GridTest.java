@@ -29,7 +29,30 @@ import org.junit.Test;
 
 public class GridTest {
 	
+	@Test
+	public void testingNumCols() {
+		Grid g1 = new Grid(1,4);
+		assertEquals("g1 ", 1, g1.numCols());
+		
+		Grid g2 = new Grid(2, 3);
+		assertEquals("g2 ", 2, g2.numCols());
 
+		Grid g3 = new Grid(5, 3);
+		assertEquals("g3 ", 5, g3.numCols());
+	}
+
+
+	@Test
+	public void testingNumRow() {
+		Grid g1 = new Grid(1,4);
+		assertEquals("g1 ", 4, g1.numRows());
+		
+		Grid g2 = new Grid(2, 3);
+		assertEquals("g2 ", 3, g2.numRows());
+
+		Grid g3 = new Grid(5, 2);
+		assertEquals("g3 ", 2, g3.numRows());
+	}
 
 	@Test
 	public void testingGetMaxCell()
@@ -72,7 +95,23 @@ public class GridTest {
 		assertEquals("table. colSpan", 2, e.colSpan);
 		assertEquals("table. rowSpan", 1, e.rowSpan);
 
+		g.setAll();
+		g.setBottom(1, 0, false);
+		Cell f = g.getMaxCell(1,0);
+		assertEquals("table 3. colSpan", 1,f.colSpan);
+		assertEquals("table 3. rowSpan", 2,f.rowSpan);
 		
+		Grid h = new Grid(2,7);
+		h.setAll();
+		h.setBottom(1, 2,false);
+		h.setBottom(1, 3,false);
+		h.setBottom(1, 4,false);
+		h.setBottom(1, 5,false);
+		Cell hc = h.getMaxCell(1,2);
+		assertEquals("table 3. colSpan", 1,hc.colSpan);
+		assertEquals("table 3. rowSpan", 5,hc.rowSpan);
+		
+
 		
 	}
 }

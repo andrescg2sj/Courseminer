@@ -51,12 +51,10 @@ import org.sj.punidos.crminer.sectorizer.ContentRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 import org.sj.punidos.crminer.sectorizer.RegionCluster;
 /**
- * Example of a custom PDFGraphicsStreamEngine subclass. Allows text and graphics to be processed
- * in a custom manner. This example simply prints the operations to stdout.
  *
- * <p>See {@link PDFStreamEngine} for further methods which may be overridden.
  * 
  * @author John Hewson
+ * @author Andres Gonzalez
  */
 public class OMIOPageExtractor extends PDFGraphicsStreamEngine
 {
@@ -239,6 +237,8 @@ public class OMIOPageExtractor extends PDFGraphicsStreamEngine
         super.showTextString(string);
         System.out.println("\"");
         
+        //FIXME
+        //cluster.push(new PDFString(region.getText(),r , null));
     }
     /**
      * Overridden from PDFStreamEngine.

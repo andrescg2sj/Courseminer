@@ -73,6 +73,19 @@ public class RegionCluster {
 		regions.add(cr);
 	}
 	
+	public int getNumberOfRegions()
+	{
+		return regions.size();
+	}
+
+	public ContentRegion getRegion(int i)
+	{
+		return regions.get(i);
+	}
+	
+
+	
+	
 	//TODO: better name
 	public static boolean previous(ContentRegion a, ContentRegion b) {
 		return (a.getPosition().getY() < b.getPosition().getY()) ||

@@ -30,6 +30,11 @@ public class GraphicString {
 	String text;
 	Rectangle bounds;
 	
+	public GraphicString(GraphicString gs) {
+		text = gs.text;
+		bounds = gs.bounds;
+	}
+	
 	public GraphicString(String t, Rectangle b) {
 		text = t;
 		bounds = b;

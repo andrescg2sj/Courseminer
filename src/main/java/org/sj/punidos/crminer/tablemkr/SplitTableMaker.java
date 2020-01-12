@@ -51,6 +51,7 @@ public class SplitTableMaker extends TableMaker {
     	
     }
     
+    @Deprecated
     static Cell[][] locToCells(CellLocation loct[][])
     {
     	Cell table[][] = new Cell[loct.length][loct[0].length];
@@ -75,8 +76,7 @@ public class SplitTableMaker extends TableMaker {
     	System.out.println("Adding Strings...");
     	addStringsToAreas(areas);
     	
-    	Cell table[][] = new Cell[rows][cols];
-    	//CellLocation loctable[][] = new CellLocation[rows][cols];
+    	Cell table[][] = new Cell[cols][rows];
 
     	addAreasToMatrix(areas, table);
     	

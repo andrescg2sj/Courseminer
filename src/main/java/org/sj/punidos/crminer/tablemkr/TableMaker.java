@@ -128,14 +128,14 @@ public abstract class TableMaker
     		if(clo == null)
     			throw new NullPointerException("Frame created a null CellLocation");
     		try {
-				System.out.println("Testing:" + clo.row+","+clo.col);
-    			if(table[clo.row][clo.col] != null) {
+				System.out.println("Testing: c:" +clo.col+", r:"+clo.row);
+    			if(table[clo.col][clo.row] != null) {
     				System.err.println("Warning! repeated.");
     			} else {
     				System.out.println("cell: "+clo.toString());
-    				System.out.println("   indices:" + clo.row+","+clo.col);
-    				table[clo.row][clo.col] = clo.cell;
-    				//loctable[clo.row][clo.col] = clo;
+    				System.out.println("   indices: c:"+clo.col+ ", r:"+clo.row);
+    				table[clo.col][clo.row] = clo.cell;
+
     				/*fillSpan(loctable, clo, clo.col, clo.row,
     						clo.cell.horizSpan, clo.cell.vertSpan);*/
     				

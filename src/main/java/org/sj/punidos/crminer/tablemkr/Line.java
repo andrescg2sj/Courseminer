@@ -22,6 +22,7 @@
 package org.sj.punidos.crminer.tablemkr;
 
 import java.awt.geom.Point2D;
+import java.util.Locale;
 import java.awt.geom.Line2D;
 
 public class Line
@@ -140,7 +141,7 @@ public class Line
     }
 
     public String toString() {
-	return String.format("Line(%.2f,%.2f,%.2f,%.2f)",
+	return String.format(Locale.ROOT, "Line(%.2f,%.2f,%.2f,%.2f)",
 			     a.getX(), a.getY(),
 			     b.getX(), b.getY());
     }

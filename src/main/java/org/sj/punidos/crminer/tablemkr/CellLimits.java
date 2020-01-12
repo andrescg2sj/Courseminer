@@ -8,6 +8,10 @@ class CellLimits {
 		right = false;
 	}
 	
+	public String toString() {
+		return (bottom? "_":" ") + (right?"|":" ");
+	}
+	
 	void setBottom() {
 		bottom = true;
 	}

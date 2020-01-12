@@ -87,4 +87,9 @@ public class GStringBuffer {
 		return region;
 	}
 	
+	public GraphicString makeString() {
+		return new GraphicString(getText(), getRegion());
+	}
+	
+	
 }

@@ -25,10 +25,10 @@ public class Grid {
 	CellLimits grid[][];
 	
 	CellLimits[][] createMatrix(int cols, int rows) {
-		CellLimits lim[][] = new CellLimits[rows][cols];
+		CellLimits lim[][] = new CellLimits[cols][rows];
     	for(int r=0; r<rows;r++) {
     		for(int c=0; c<cols;c++) {
-    			lim[r][c] = new CellLimits();
+    			lim[c][r] = new CellLimits();
     		}
     	}
 		return lim;
@@ -37,85 +37,121 @@ public class Grid {
 	public void setAll() {
     	for(int r=0; r<numRows();r++) {
     		for(int c=0; c<numCols();c++) {
-    			grid[r][c].setBottom();
-    			grid[r][c].setRight();
+    			grid[c][r].setBottom();
+    			grid[c][r].setRight();
     		}
     	}
 		
 	}
 	
-	public int numRows() {
-		return grid.length;
+	public void log()
+	{
+		for(int r=0;r<numRows();r++) {
+			for(int c=0; c<numCols();c++) {
+				System.out.print(grid[c][r]);
+			}
+			System.out.println();
+			
+		}
 	}
 	
-	public int numCols() {
+	public int numRows() {
 		return grid[0].length;
 	}
 	
+	public int numCols() {
+		return grid.length;
+	}
+	
 	//FIXME: use consistent cols/rows order.
-	public Grid(int rows, int cols) {
-		//grid = new CellLimits[rows][cols];
+	public Grid(int cols, int rows) {
 		grid = createMatrix(cols, rows);
 	}
-	
-	public void setBottom(int row, int col) {
-		grid[row][col].setBottom();
+
+	public void setLeft(int col, int row) {
+		setLeft(col, row, true);
 	}
 
-	public void setBottom(int row, int col, boolean value) {
-		grid[row][col].bottom = value;
+	public void setLeft(int col, int row, boolean value) {
+		if(col > 0) setRight(col-1, row, value);
+	}
+
+	public void setTop(int col, int row) {
+		setTop(col, row, true);
+	}
+
+	
+	public void setTop(int col, int row, boolean value) {
+		if(row > 0) setBottom(col, row-1, value);
+	}
+	
+	public void setBottom(int col, int row) {
+		grid[col][row].setBottom();
+	}
+
+	public void setBottom(int col, int row, boolean value) {
+		grid[col][row].bottom = value;
 	}
 	
 
-	public void setRight(int row, int col) {
-		grid[row][col].setRight();
+	public void setRight(int col, int row) {
+		grid[col][row].setRight();
 	}
 	
-	public void setRight(int row, int col, boolean value) {
-		grid[row][col].right = value;
+	public void setRight(int col, int row, boolean value) {
+		grid[col][row].right = value;
 	}
 	
-	public boolean getRight(int row, int col) {
-		return grid[row][col].right;
+	public boolean getRight(int col, int row) {
+		return grid[col][row].right;
 	}
 
-	public boolean getBottom(int row, int col) {
-		return grid[row][col].bottom;
+	public boolean getBottom(int col, int row) {
+		return grid[col][row].bottom;
 	}
 
-	Cell getMaxCell(int row, int col) {
-		return getMaxCell(grid, row, col);
-	}
+	/*
+	Cell getMaxCell(int col, int row) {
+		return getMaxCell(grid, col, row);
+	}*/
 	
 	/*TODO: This static method doesn't look like a good design. 
 	 * Maybe another class that encapsulates CellLimits matrix operations is desirable.
 	 */
-	static Cell getMaxCell(CellLimits matrix[][], int row, int col) {
+	public Cell getMaxCell(int col, int row) {
 		int c=col;
 		int r=row;
 		int colSpan,rowSpan;
 		int lastCol;
 		boolean lineFound = false;
 		boolean vertLine = false;
+		//System.out.println("getMaxCell");
 		
-		while(c < matrix[0].length && !vertLine) {
-			lineFound |= matrix[row][c].bottom;
-			vertLine |= matrix[row][c].right;
+		while(c < numCols() && !vertLine) {
+			lineFound |= grid[c][row].bottom;
+			vertLine |= grid[c][row].right;
 			c++;
 		}
 		lastCol = c;
 		colSpan = c-col;
 		r++;
+		//System.out.println(" lastCol="+lastCol);
+		//System.out.println(" lineFound="+lineFound);
+		//System.out.println(" vertF="+lastCol);
+		//System.out.println(" numRows()="+numRows());
 
-		while(r < matrix.length && !lineFound) {
+		while(r < numRows() && !lineFound) {
 			lineFound = false;
 			vertLine = false;
 			c = col;			
+			System.out.println(" r="+r);
 			while(c < lastCol  && !vertLine) {
-				lineFound |= matrix[r][c].bottom;
-				vertLine |= matrix[r][c].right;
+				lineFound |= grid[c][r].bottom;
+				vertLine |= grid[c][r].right;
+				//System.out.println("  " + lineFound + ", "+vertLine);
 				c++;
 			}
+			//System.out.println(" c="+c);
 			if(c < lastCol) lineFound = true;
 			r++;
 		}

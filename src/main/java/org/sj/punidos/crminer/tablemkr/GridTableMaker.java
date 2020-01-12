@@ -40,34 +40,56 @@ public class GridTableMaker extends TableMaker {
 	
 	
 
-	//TODO: Must be a method of Table
-	static void fillCells(Cell matrix[][], Cell cell, int row, int col)
+	//Thi method is now in Table
+	@Deprecated
+	static void fillCells(Cell matrix[][], Cell cell, int col, int row)
 	{
 		HiddenCell hidden = new HiddenCell(col, row, cell);
 		for(int r=0;r<cell.rowSpan;r++) {
 			for(int c=0;c<cell.colSpan;c++) {
 				if(r == 0 && c == 0) {
-					matrix[r+row][c+col] = cell;
+					matrix[c+col][r+row] = cell;
 				} else {
-					matrix[r+row][c+col] = hidden;  
+					matrix[c+col][r+row] = hidden;  
 				}
 			}
 		}
 	}
 	
 	public static Table fromGrid(Grid g) {
+		System.out.println(" --- ");
+		g.log();
+		
 		GridTableMaker maker = new GridTableMaker(g);
 		//return maker.makeFromGrid();
-		return new Table(maker.cellMatrix());
+		//return new Table(maker.cellMatrix());
+		Table table = new Table(g.numCols(), g.numRows());
+		maker.fillTable(table);
+		return table;
 	}
 	
-	public Cell[][] cellMatrix() {
-    	Cell table[][] = new Cell[grid.numRows()][grid.numCols()];
+	public void fillTable(Table t) {
     	for(int r=0; r<grid.numRows();r++) {
     		for(int c=0; c<grid.numCols();c++) {
-    			if(table[r][c] == null) {
-    				Cell cell = grid.getMaxCell(r,c);
-    				fillCells(table, cell, r,c);
+    			if(t.get(c, r) == null) {
+    				Cell cell = grid.getMaxCell(c,r);
+    				System.out.println(String.format("  fill:%d,%d - %s", c,r, cell.toString()));
+    				t.fillCells(cell, c,r);
+    			}
+    		}
+    	}
+	}
+	
+	@Deprecated
+	public Cell[][] cellMatrix() {
+		System.out.println("cellMatrix");
+    	Cell table[][] = new Cell[grid.numCols()][grid.numRows()];
+    	for(int r=0; r<grid.numRows();r++) {
+    		for(int c=0; c<grid.numCols();c++) {
+    			if(table[c][r] == null) {
+    				Cell cell = grid.getMaxCell(c,r);
+    				fillCells(table, cell, c,r);
+    				System.out.println("  ");
     			}
     		}
     	}
@@ -79,25 +101,28 @@ public class GridTableMaker extends TableMaker {
 	 * @return
 	 */
 	Table makeFromGrid() {
-    	Cell table[][] = cellMatrix();
+    	//Cell table[][] = cellMatrix();
+		Table table = new Table(grid.numCols(), grid.numRows());
+		fillTable(table);
     	
     	
-    	Vector<Area> areas = buildAreas(table);
+    	Vector<Area> areas = buildAreas(table.cells);
+    	//System.out.println()
     	addStringsToAreas(areas);
 
     	// debug
     	toSVG(areas);
 
-    	
+    	//FIXME: encapsulate? superclass method?
        	for(Area a: areas) {
 			System.out.println("Build location: " + a.toString());
     		CellLocation clo = frame.areaToCellLoc(a, this.collisionThreshold);
     		if(clo == null)
     			throw new NullPointerException("Frame created a null CellLocation");
     		try {
-				System.out.println("Testing:" + clo.row+","+clo.col);
-    			if(table[clo.row][clo.col] != null) {
-    				table[clo.row][clo.col].contents = clo.cell.contents;
+				System.out.println("Testing: c:" + clo.col+", r:"+clo.row);
+    			if(table.get(clo.col,clo.row) != null) {
+    				table.cells[clo.col][clo.row].contents = clo.cell.contents;
     			} else {
     				// TODO
     				System.err.println("Warning! Trying to fill empty cell.");
@@ -123,8 +148,8 @@ public class GridTableMaker extends TableMaker {
 		frame = buildFrame();
 		frame.log();
 		
-		//grid = new CellLimits[f.numRows()][f.numCols()];
-		grid = new Grid(frame.numRows(), frame.numCols());
+		grid = new Grid(frame.numCols(), frame.numRows());
+		
 		// volver a recorrer. Rellenar CellBorders
 		for(Line l: lines) {
 			CellLocation cloc = frame.lineToLoc(l, collisionThreshold);
@@ -133,19 +158,20 @@ public class GridTableMaker extends TableMaker {
 
 			if(l.isHoriz()) {
 				for(int i=0; i<=cloc.cell.colSpan-1;i++) {
-					//grid[cloc.row][cloc.col+i].setBottom();
-					System.out.println("set bottom: "+cloc.row+","+(cloc.col+i));
-					grid.setBottom(cloc.row,cloc.col+i);
+					System.out.println("set top: c:"+(cloc.col+i)+", r:"+cloc.row);
+					grid.setTop(cloc.col+i,cloc.row);
 				}
 			} else {
 				for(int i=0; i<=cloc.cell.rowSpan-1;i++) {
-					//grid[cloc.row+i][cloc.col].setRight();
-					System.out.println("set right: "+(cloc.row+i)+","+cloc.col);
-					grid.setRight(cloc.row+i,cloc.col);
+					System.out.println("set left: c:" +cloc.col+", r:"+(cloc.row+i));
+					grid.setLeft(cloc.col,cloc.row+i);
 				}
 			}
 		}
 		
+		System.out.println("Grid:");
+		grid.log();
+
 		return makeFromGrid();
 		
 	}
@@ -156,10 +182,13 @@ public class GridTableMaker extends TableMaker {
 		Vector<Area> areas = new Vector<Area>();
 		for(int col=0;col<grid.numCols();col++) {
 			for(int row=0;row<grid.numRows();row++) {
-				if(!(cells[row][col] instanceof HiddenCell)) {
-					Cell cell = cells[row][col];
+				if(cells[col][row] instanceof HiddenCell) {
+					System.out.println(String.format("hidden: col:%d,row:%d",col, row));
+				} else {
+					Cell cell = cells[col][row];
+					System.out.println(String.format("Cell: col:%d,row:%d",col, row));
 					Area a = frame.cellToArea(col, row, cell.colSpan, cell.rowSpan);
-					System.out.println("built area: "+a);
+					System.out.println("  built area: "+a);
 					areas.add(a);
 				}
 			}
