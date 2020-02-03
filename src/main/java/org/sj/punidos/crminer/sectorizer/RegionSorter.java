@@ -22,7 +22,7 @@ package org.sj.punidos.crminer.sectorizer;
 
 import java.util.Vector;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 
 public class RegionSorter {
 
@@ -37,7 +37,7 @@ public class RegionSorter {
 		return greater(a.getPosition(), b.getPosition());
 	}
 	
-	static boolean greater(Point a, Point b) {
+	static boolean greater(Point2D a, Point2D b) {
 		if(a.getY() > b.getY()) return true;
 		else if(a.getY() == b.getY()) {
 			if(a.getX() > b.getX()) return true;

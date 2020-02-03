@@ -20,7 +20,7 @@
 
 package org.sj.punidos.crminer.cepi.pdfboximpl;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 public class ClippingArea {
 	
@@ -29,19 +29,21 @@ public class ClippingArea {
 	 * 
 	 * null area means infinite valid clipping area.
 	 */
-	Rectangle area = null;
+	Rectangle2D area = null;
 	
 	public ClippingArea() {
 	}
 
-	public ClippingArea(Rectangle r) {
+	public ClippingArea(Rectangle2D r) {
 		area = r;
 	}
 	
-	public boolean clip(Rectangle r) {
+
+	public boolean clip(Rectangle2D r) {
 		if(area == null)
 			return true;
 		return area.contains(r);
  	}
+
 
 }

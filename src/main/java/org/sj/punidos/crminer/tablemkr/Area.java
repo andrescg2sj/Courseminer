@@ -28,7 +28,10 @@ import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 
-
+/* 
+ * TODO: Substitute by sectorizer.contentRegion?
+ * - Only feasible for RecWtArea.
+ */
 public abstract class Area
 {
     //Line top, left, right, bottom;

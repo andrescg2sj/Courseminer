@@ -173,12 +173,12 @@ public class Frame {
 	
 	public int numRows()
 	{
-		return y.length - 1;
+		return Math.max(y.length - 1,0);
 	}
 	
 	public int numCols()
 	{
-		return x.length - 1;
+		return Math.max(x.length - 1,0);
 	}
 	
 	public Area cellToArea(int col, int row, int colSpan, int rowSpan) {

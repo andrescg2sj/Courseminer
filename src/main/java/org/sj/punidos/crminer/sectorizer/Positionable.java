@@ -20,10 +20,14 @@
 
 package org.sj.punidos.crminer.sectorizer;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 
 public interface Positionable {
 
 	
-	public Point getPosition();
+	public Point2D getPosition();
+	
+	public Rectangle2D getBounds();
 }

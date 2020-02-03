@@ -25,7 +25,7 @@ import java.awt.Rectangle;
 
 //import org.apache.pdfbox.pdmodel.font.PDFont;
 
-public class GraphicString {
+public class GraphicString implements Positionable {
 
 	String text;
 	Rectangle bounds;

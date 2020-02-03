@@ -148,6 +148,10 @@ public class GridTableMaker extends TableMaker {
 		frame = buildFrame();
 		frame.log();
 		
+		if(frame.numCols() == 0 || frame.numRows() == 0) {
+			return null;
+		}
+		
 		grid = new Grid(frame.numCols(), frame.numRows());
 		
 		// volver a recorrer. Rellenar CellBorders

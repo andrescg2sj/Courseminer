@@ -28,8 +28,8 @@ import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
 
 public class PDFTableToHTML implements CommonInfo
 {
-    //static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
-    static String DEFAULT_PATH = "res/test-1cell.pdf";
+    static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
+    //static String DEFAULT_PATH = "res/test-1cell.pdf";
     
     public static void createDestDirectory() {
     	 File dir = new File(DST_PATH);
@@ -46,7 +46,8 @@ public class PDFTableToHTML implements CommonInfo
 
     public static void main(String args[]) {
 	String path = DEFAULT_PATH;
-	Rectangle clipArea = null;
+	//Rectangle clipArea =  new Rectangle(0,193,583, 544-193);
+	Rectangle clipArea =  null;
 	
 	
 	if(args.length > 0) {

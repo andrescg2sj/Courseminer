@@ -47,7 +47,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
-import org.sj.punidos.crminer.sectorizer.ContentRegion;
+import org.sj.punidos.crminer.sectorizer.StringRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 import org.sj.punidos.crminer.sectorizer.RegionCluster;
 /**
@@ -146,7 +146,7 @@ public class OMIOPageExtractor extends PDFGraphicsStreamEngine
         System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
                 p0.getX(), p0.getY(), p1.getX(), p1.getY(),
                 p2.getX(), p2.getY(), p3.getX(), p3.getY());
-        Rectangle r = ContentRegion.rectangleFromPoints(p0,p1,p2,p3);
+        Rectangle2D r = StringRegion.rectangleFromPoints(p0,p1,p2,p3);
         cluster.pushRegion(r);
     }
     @Override

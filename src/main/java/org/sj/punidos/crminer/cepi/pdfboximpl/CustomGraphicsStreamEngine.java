@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
@@ -60,7 +61,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.sj.punidos.crminer.CommonInfo;
-import org.sj.punidos.crminer.sectorizer.ContentRegion;
+import org.sj.punidos.crminer.sectorizer.StringRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 import org.sj.punidos.crminer.sectorizer.RegionCluster;
 import org.sj.punidos.crminer.tablemkr.GridTableMaker;
@@ -99,6 +100,12 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 			+ "</head>";
 	
     GStringBuffer regionText = new GStringBuffer();
+    //LineManager linemg = new LineManager();
+    LinkedList<Line> lines = new LinkedList<Line>();
+    LinkedList<GraphicString> gstrings = new LinkedList<GraphicString>();
+    
+    LinkedList<Table> generatedTables = new LinkedList<Table>(); 
+    
 	//RegionCluster cluster;
 	
 	int rectCount = 0;
@@ -111,13 +118,58 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
 	//TableMaker tmaker = new SplitTableMaker();
     TableMaker tmaker = new GridTableMaker();
-	
+    
+	public Rectangle rectFromLine(Line l) {
+		//TODO: Rectangle2D?
+		Rectangle r = new Rectangle();
+		r.setLocation((int) l.getA().getX(), (int) l.getA().getY());
+		r.add((int) l.getB().getX(), (int) l.getB().getY());;
+		r.grow(LineManager.MIN_THICKNESS, LineManager.MIN_THICKNESS); 
+		return r;
+	}
+
+    
+    public void organizeLines()
+    {
+		RegionCluster rc = new RegionCluster();
+    	for(Line l: lines) {
+    		rc.pushRegion(rectFromLine(l));
+    	}
+    	rc.meltRegions();
+    	
+    	for(int i=0;i<rc.getNumberOfRegions(); i++) {
+    		StringRegion r = rc.getRegion(i);
+    		
+        	for(Line l: lines) {
+        		if(r.contains(l.getA()) || r.contains(l.getB())) {
+        			
+        		}
+        	}
+    	}
+   
+    	
+    }
+    
+    //TODO: refactor for multiple Tables
+    public void feedTableMaker() {
+    	//linemg.feedTableMaker(tmaker);
+    	for(Line l: lines) {
+    		tmaker.add(l);
+    	}
+    	
+    	for(GraphicString gs: gstrings) {
+    		tmaker.add(gs);
+    	}
+
+    }
     
     public void writeHTML(String filename) throws IOException {
     	File f = new File(filename);
     	FileOutputStream fos = new FileOutputStream(f);
+    	feedTableMaker();
     	Table t = tmaker.makeTable();
     	String s = t.toHTML();
+    	
     	
     	fos.write((HTML_HEAD + "<body>").getBytes());
     	fos.write(s.getBytes());
@@ -176,16 +228,19 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	System.out.println("size H:"+getPage().getBBox().getHeight());
     }
     
+    @Deprecated
     public double transf_Yd(double y) {
     	PDRectangle r = getPage().getBBox();
     	return r.getHeight() - y;
     }
 
+    @Deprecated
     public float transf_Yf(float y) {
     	PDRectangle r = getPage().getBBox();
     	return r.getHeight() - y;
     }
-    
+
+    @Deprecated
     public Point2D transform(Point2D p) {
     	if(p instanceof Point2D.Float) {
     		return new Point2D.Float((float) p.getX(), transf_Yf((float)p.getY()));
@@ -194,6 +249,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	}
     }
     
+    //FIXME: not necessary anymore
     public Line buildLine(Point2D a, Point2D b) {
     	//return new Line(transform(a), transform(b));
     	return new Line(a, b);
@@ -217,16 +273,22 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     public void strokeRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
 
-        Rectangle r = ContentRegion.rectangleFromPoints(p0,p1,p2,p3);
+        Rectangle2D r = StringRegion.rectangleFromPoints(p0,p1,p2,p3);
         if(clip.clip(r)) {
             System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
                     p0.getX(), p0.getY(), p1.getX(), p1.getY(),
                     p2.getX(), p2.getY(), p3.getX(), p3.getY());
             /* add rectangle */
-            tmaker.add(buildLine(p0, p1));
+            /*tmaker.add(buildLine(p0, p1));
             tmaker.add(buildLine(p1, p2));
             tmaker.add(buildLine(p2, p3));
-            tmaker.add(buildLine(p3, p0));
+            tmaker.add(buildLine(p3, p0));*/
+            
+            lines.add(buildLine(p0, p1));
+            lines.add(buildLine(p1, p2));
+            lines.add(buildLine(p2, p3));
+            lines.add(buildLine(p3, p0));
+            
             
             rectCount++;
 
@@ -261,7 +323,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     {
     	//region.add(new Point((int)x,(int)y));
     	lineCount++;
-	path.lineTo(new Point2D.Float(x,y));
+    	path.lineTo(new Point2D.Float(x,y));
 
         System.out.printf("lineTo %.2f %.2f\n", x, y);
     }
@@ -306,20 +368,22 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     {
     	//pushCurrent();o
 
-	Iterable<Line2D> lines = path.getIterable();
+	Iterable<Line2D> pathLines = path.getIterable();
 	int linCnt = 0;
-	for(Line2D l : lines) {
-	    tmaker.add(buildLine(l.getP1(), l.getP2()));
+	for(Line2D l : pathLines) {
+	    lines.add(buildLine(l.getP1(), l.getP2()));
 	    linCnt++;
 	}
 	strokeCount += linCnt;
         System.out.println("strokePath("+linCnt+")");
 	path.clear();
     }
+    
     @Override
     public void fillPath(int windingRule) throws IOException
     {
     	pushCurrent();
+    	//strokePath();
         System.out.println("fillPath");
     }
     @Override
@@ -361,7 +425,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
         	System.err.println("No region");
         	throw new NullPointerException("regionText.region");
         }
-        tmaker.add(new GraphicString(regionText.getText(), r));
+        gstrings.add(new GraphicString(regionText.getText(), r));
         System.out.println("  -REG:"+regionText.getText());
          
         regionText.reset();
@@ -384,8 +448,11 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
         	System.err.println("No region");
         	throw new NullPointerException("regionText.region");
         }
-        tmaker.add(new GraphicString(regionText.getText(), r));
+        gstrings.add(new GraphicString(regionText.getText(), r));
         System.out.println(regionText.getText());
+        
+        regionText.reset();
+
         System.out.println("\"");
         //System.out.println("  "+r.toString());
   
