@@ -42,18 +42,46 @@ public class PDFTableToHTML implements CommonInfo
     	//Rectangle clipArea = new Rectangle(0,108,583, 720-108);
 
     }
+    
+    /**
+     * Parse
+     */
+    public static Rectangle parseDimensions(String spec) {
+    	String parts[] = spec.split(",");
+    	if(parts.length != 4) {
+    		throw new IllegalArgumentException("Expected: 4 numbers separated by comma. Given: "+parts.length);
+    	}
+    	int x = Integer.parseInt(parts[0]);
+    	int y = Integer.parseInt(parts[1]);
+    	int width = Integer.parseInt(parts[2]);
+    	int height = Integer.parseInt(parts[3]);
+    	return new Rectangle(x,y,width,height);
+    }
 
 
     public static void main(String args[]) {
 	String path = DEFAULT_PATH;
-	//Rectangle clipArea =  new Rectangle(0,193,583, 544-193);
-	Rectangle clipArea =  null;
+	//main table
+	//Rectangle clipArea =  new Rectangle(0,190,583, 381);
+	//Title: Formación laboral
+	//Rectangle clipArea =  new Rectangle(0,562,583, 40);
+	Rectangle clipRect =  null;	
 	
 	
 	if(args.length > 0) {
 	    path = args[0];
-	    clipArea = null;
+	    
+    	clipRect = null;
+	    if(args.length > 1) {
+	    	clipRect = parseDimensions(args[1]);
+	    	System.out.println("Clipping rectangle:"+ clipRect.toString());
+	    }
 	} else {
+	    System.out.println("Usage: PDFTableToHTML [path] [x,y,widht,height]");
+	    System.out.println();
+	    System.out.println("       path: path to PDF file");
+	    System.out.println("       x,y,widht,height: dimensions of clipping area.");
+	    System.out.println();
 	    System.out.println("No arguments. Using default path.");
 	}
 
@@ -66,7 +94,7 @@ public class PDFTableToHTML implements CommonInfo
 	    //CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
 	    // 108,0,720,583
 	    CustomGraphicsStreamEngine engine =
-		new CustomGraphicsStreamEngine(page, clipArea);
+		new CustomGraphicsStreamEngine(page, clipRect);
 	    engine.run();
 	    doc.close();
 	    //System.out.println("------------------");

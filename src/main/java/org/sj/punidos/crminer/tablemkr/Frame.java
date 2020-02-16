@@ -108,10 +108,10 @@ public class Frame {
 		int horizSpan = max_x_index- x_index;
 		int vertSpan = max_y_index - y_index;
 		
-		System.out.println(String.format("y_index:%d max_y_index:%d\n",
+		/*System.out.println(String.format("y_index:%d max_y_index:%d\n",
 				y_index, max_y_index));
 		System.out.println(String.format("rev(max_y_index):%d\n",
-				reverseIndexY(max_y_index-1)));
+				reverseIndexY(max_y_index-1)));*/
 
 		
 
@@ -127,7 +127,7 @@ public class Frame {
 		//int max_y_index = getFirstIndexAbove(line.getB().getY()-threshold, this.y);
 		int horizSpan = max_x_index - x_index;
 		int vertSpan = 0;
-		System.out.println(String.format("y_index:%d\n", y_index));
+		//System.out.println(String.format("y_index:%d\n", y_index));
 
 		return new CellLocation(x_index, reverseIndexY(y_index-1), horizSpan, vertSpan);
     }
@@ -141,8 +141,9 @@ public class Frame {
 		int max_y_index = getClosestIndex(line.getB().getY(), this.y);
 		int horizSpan = 0;
 		int vertSpan = max_y_index - y_index;
+		/*
 		System.out.println(String.format("y_index:%d max_y_index:%d\n",
-				y_index, max_y_index));
+				y_index, max_y_index));*/
 
 
 		return new CellLocation(x_index, reverseIndexY(max_y_index-1), horizSpan, vertSpan);
@@ -186,11 +187,11 @@ public class Frame {
 		if(rowSpan < 1) throw new IllegalArgumentException("rowSpan="+rowSpan);
 		double min_x = x[col]; 
 		int high_index_y = reverseIndexY(row)+1;
-		System.out.println(String.format("  row:%d, index:%d", row, high_index_y));
+		//System.out.println(String.format("  row:%d, index:%d", row, high_index_y));
 		double max_y = y[high_index_y]; 
 		double max_x = x[col+colSpan]; 
 		int low_index_y = high_index_y-rowSpan;
-		System.out.println(String.format("  last_row(reversed):%d", low_index_y));
+		//System.out.println(String.format("  last_row(reversed):%d", low_index_y));
 		double min_y = y[low_index_y];
 		double height = max_y - min_y;
 		if(height < 0) {

@@ -80,7 +80,7 @@ public class SvgTrace implements CommonInfo {
 	    System.out.println("Trace: gstrings: " + gstrs.size());
 	    for(GraphicString gs: gstrs) {
 		content += gstrToSvg(gs);
-		System.out.println("  gstr: " + gs.getText());
+		//System.out.println("  gstr: " + gs.getText());
 	    }
 	}
 

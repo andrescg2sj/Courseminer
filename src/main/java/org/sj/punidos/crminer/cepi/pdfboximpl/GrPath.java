@@ -21,8 +21,11 @@
 package org.sj.punidos.crminer.cepi.pdfboximpl;
 
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.Shape;
+//import java.awt.geom.Point2D;
 
 import java.util.Vector;
 //import java.util.Iterator;
@@ -31,10 +34,10 @@ public class GrPath {
 
 
     Point2D position;
-    Vector<Line2D> elements;
+    Vector<Shape> elements;
 
     public GrPath() {
-	elements = new Vector<Line2D>();
+	elements = new Vector<Shape>();
 
     }
 
@@ -57,8 +60,17 @@ public class GrPath {
 	moveTo(q);
 
     }
+    
+    //TODO: May the points describe a rotated rectangle?
+    public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) {
+    	//TODO: log/Warning/exception if the rectangle is rotated
+    	Rectangle2D rect = new Rectangle2D.Double(p0.getX(),p0.getY(),p1.getX()-p0.getX(),p1.getY()-p0.getY());
+    	rect.add(p2);
+    	rect.add(p3);
+    	elements.add(rect);
+    }
 
-    public Iterable<Line2D> getIterable() {
+    public Iterable<Shape> getIterable() {
 	return elements;
     }
 
@@ -66,7 +78,10 @@ public class GrPath {
 	elements.clear();
     }
 
-    
+    public int numElements() 
+    {
+    	return elements.size();
+    }
 	
 }
 

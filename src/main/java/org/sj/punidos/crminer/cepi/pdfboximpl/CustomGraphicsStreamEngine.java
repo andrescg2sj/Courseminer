@@ -54,6 +54,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
@@ -114,6 +115,11 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 	
 	ClippingArea clip;
     GrPath path = new GrPath();
+    
+    /**
+     * maximum thickness of a rectangle in order to be considered as a line.
+     */
+    double maxLineThickness = 2;
 	
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
 	//TableMaker tmaker = new SplitTableMaker();
@@ -254,6 +260,17 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	//return new Line(transform(a), transform(b));
     	return new Line(a, b);
     }
+    
+    public Line buildVertLine(Rectangle2D rect) {
+    	return new Line(new Point2D.Double(rect.getCenterX(), rect.getY()),
+    			new Point2D.Double(rect.getCenterX(), rect.getMaxY()));
+    }
+
+    public Line buildHorizLine(Rectangle2D rect) {
+    	return new Line(new Point2D.Double(rect.getX(), rect.getCenterY()),
+    			new Point2D.Double(rect.getMaxX(), rect.getCenterY()));
+    }
+
 
     public Rectangle transfRect(Rectangle r) {
     	//Rectangle z = new Rectangle(1,2,3,4);
@@ -267,7 +284,21 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
-	//strokeRectangle(p0,p1,p2,p3);
+         System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
+                p0.getX(), p0.getY(), p1.getX(), p1.getY(),
+                p2.getX(), p2.getY(), p3.getX(), p3.getY()); 
+        //FIXME:
+    	//strokeRectangle(p0,p1,p2,p3);
+        /*
+    	path.moveTo(p0);
+    	path.lineTo(p1);
+    	path.lineTo(p2);
+    	path.lineTo(p3);
+    	path.lineTo(p0);
+    	*/
+        path.appendRectangle(p0, p1, p2, p3);
+    	
+    	
     }
 
     public void strokeRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
@@ -275,7 +306,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 
         Rectangle2D r = StringRegion.rectangleFromPoints(p0,p1,p2,p3);
         if(clip.clip(r)) {
-            System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
+            System.out.printf("strokeRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
                     p0.getX(), p0.getY(), p1.getX(), p1.getY(),
                     p2.getX(), p2.getY(), p3.getX(), p3.getY());
             /* add rectangle */
@@ -366,13 +397,19 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void strokePath() throws IOException
     {
+    	
     	//pushCurrent();o
 
-	Iterable<Line2D> pathLines = path.getIterable();
+	Iterable<Shape> elems = path.getIterable();
 	int linCnt = 0;
-	for(Line2D l : pathLines) {
-	    lines.add(buildLine(l.getP1(), l.getP2()));
-	    linCnt++;
+	for(Shape s : elems) {
+		if(s instanceof Line2D) {
+			Line2D l = (Line2D) s;
+			lines.add(buildLine(l.getP1(), l.getP2()));
+			linCnt++;
+		} else if(s instanceof Rectangle2D) {
+			//TODO
+		}
 	}
 	strokeCount += linCnt;
         System.out.println("strokePath("+linCnt+")");
@@ -384,8 +421,59 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     {
     	pushCurrent();
     	//strokePath();
-        System.out.println("fillPath");
+    	
+    	/*
+    	 * TODO:
+    	 * - detect closed sub-paths (repeated point...)
+    	 * - detect rectangles.
+    	 * 	 - detect thin rectangles -> generate lines.
+    	 */
+    	PDGraphicsState gs = this.getGraphicsState();
+    	PDColor clr = gs.getStrokingColor();
+        System.out.println("fillPath (color="+clr.toRGB()+")");
+        PDColor nsclr = gs.getNonStrokingColor();
+        System.out.println("         (non stroking="+nsclr.toRGB()+")");
+        
+        System.out.println("         (path:"+path.numElements()+")");
+    	Iterable<Shape> elems = path.getIterable();
+    	int linCnt = 0;
+    	for(Shape s : elems) {
+    		if(s instanceof Line2D) {
+    			//TODO
+    		} else if(s instanceof Rectangle2D) {
+    			//TODO
+    			Rectangle2D rect = (Rectangle2D) s;
+    			if(isVerticalStrip(rect,maxLineThickness)) {
+    				if(nsclr.toRGB() == 0) {
+    					tmaker.add(buildVertLine(rect));
+    					this.lineCount++;
+    				} else {
+    					System.out.println("Non black vert. line");
+    				}
+    			} else if(isHorizontalStrip(rect,maxLineThickness)){
+    				if(nsclr.toRGB() == 0) {
+    					tmaker.add(buildHorizLine(rect));
+    					this.lineCount++;
+    				} else {
+    					System.out.println("Non black horiz. line");
+    				}
+    			}
+    		}
+    		
+    	}
+
+        path.clear();
     }
+    
+    public static boolean isVerticalStrip(Rectangle2D rect, double threshold) {
+    	return (rect.getWidth() < threshold);
+    }
+    
+    public static boolean isHorizontalStrip(Rectangle2D rect, double threshold) {
+    	return (rect.getHeight() < threshold);
+    }
+
+    
     @Override
     public void fillAndStrokePath(int windingRule) throws IOException
     {
@@ -438,22 +526,22 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void showTextStrings(COSArray array) throws IOException
     {
-        
         System.out.print("showTextStrings \"");
-        regionText.reset();
         super.showTextStrings(array);
+        System.out.println("\"");
 
         Rectangle r = regionText.getRegion();
         if(r == null) {
         	System.err.println("No region");
         	throw new NullPointerException("regionText.region");
         }
-        gstrings.add(new GraphicString(regionText.getText(), r));
-        System.out.println(regionText.getText());
+        if(clip.clip(r)) {
+        	gstrings.add(new GraphicString(regionText.getText(), r));
+        	System.out.println(regionText.getText());
+        }
         
         regionText.reset();
 
-        System.out.println("\"");
         //System.out.println("  "+r.toString());
   
     }

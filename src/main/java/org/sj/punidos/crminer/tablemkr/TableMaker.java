@@ -75,8 +75,37 @@ public abstract class TableMaker
     	int y[] = Arrays.copyOf(allMarks, i);
     	Arrays.sort(x);
     	Arrays.sort(y);
+    	x = reduce(x);
+    	y = reduce(y);
     	
     	return new Frame(x,y);
+    }
+    
+    public static int[] reduce(int values[]) {
+    	if(values.length == 0) {
+    		return values;
+    	}
+    	int elements = 1;
+    	int last = values[0];
+    	for(int i=1; i< values.length;i++) {
+    		if(values[i] != last) {
+    			last = values[i];
+    			elements ++;
+    		}
+    	}
+    	
+    	int newValues[] = new int[elements];
+    	int j = 0;
+    	//last = values[0];
+    	newValues[0] = values[0];
+    	for(int i=1; i< values.length;i++) {
+    		if(values[i] != newValues[j]) {
+    			j++;
+    			newValues[j]= values[i];
+    		}
+    	}
+
+    	return newValues;
     }
     
     public void add(Line line) {

@@ -42,10 +42,20 @@ public class StringRegion extends ContentRegion {
 	
 	//public static String getText(GraphicsString )
 	
+	
+	
 	List<String> getStrings() 
 	{
-		return getGraphicStrings().stream().map(GraphicString::getText).collect(toList());
+		//This would require Java 1.8
+		//return getGraphicStrings().stream().map(GraphicString::getText).collect(toList());
+
+		LinkedList<String> strings = new LinkedList<String>();
+		for(GraphicString gs: getGraphicStrings()) {
+			strings.add(gs.getText());
+		}
+		return strings;
 	}
+
 
 	
 	List<GraphicString> getGraphicStrings() {

@@ -73,7 +73,7 @@ public class GridTableMaker extends TableMaker {
     		for(int c=0; c<grid.numCols();c++) {
     			if(t.get(c, r) == null) {
     				Cell cell = grid.getMaxCell(c,r);
-    				System.out.println(String.format("  fill:%d,%d - %s", c,r, cell.toString()));
+    				//System.out.println(String.format("  fill:%d,%d - %s", c,r, cell.toString()));
     				t.fillCells(cell, c,r);
     			}
     		}
@@ -129,7 +129,7 @@ public class GridTableMaker extends TableMaker {
     			}
     		} catch(Exception ie) {
     			ie.printStackTrace();
-    		}
+    		} //catch(ArrayIndexOutOfBounds)
     	}
     	
 
@@ -157,24 +157,25 @@ public class GridTableMaker extends TableMaker {
 		// volver a recorrer. Rellenar CellBorders
 		for(Line l: lines) {
 			CellLocation cloc = frame.lineToLoc(l, collisionThreshold);
-			System.out.println("*line: "+l.toString());
-			System.out.println("*location: "+cloc.toString());
+			
+			//System.out.println("*line: "+l.toString());
+			//System.out.println("*location: "+cloc.toString());
 
 			if(l.isHoriz()) {
 				for(int i=0; i<=cloc.cell.colSpan-1;i++) {
-					System.out.println("set top: c:"+(cloc.col+i)+", r:"+cloc.row);
+					//System.out.println("set top: c:"+(cloc.col+i)+", r:"+cloc.row);
 					grid.setTop(cloc.col+i,cloc.row);
 				}
 			} else {
 				for(int i=0; i<=cloc.cell.rowSpan-1;i++) {
-					System.out.println("set left: c:" +cloc.col+", r:"+(cloc.row+i));
+					//System.out.println("set left: c:" +cloc.col+", r:"+(cloc.row+i));
 					grid.setLeft(cloc.col,cloc.row+i);
 				}
 			}
 		}
 		
 		System.out.println("Grid:");
-		grid.log();
+		//grid.log();
 
 		return makeFromGrid();
 		
@@ -187,12 +188,12 @@ public class GridTableMaker extends TableMaker {
 		for(int col=0;col<grid.numCols();col++) {
 			for(int row=0;row<grid.numRows();row++) {
 				if(cells[col][row] instanceof HiddenCell) {
-					System.out.println(String.format("hidden: col:%d,row:%d",col, row));
+					//System.out.println(String.format("hidden: col:%d,row:%d",col, row));
 				} else {
 					Cell cell = cells[col][row];
-					System.out.println(String.format("Cell: col:%d,row:%d",col, row));
+					//System.out.println(String.format("Cell: col:%d,row:%d",col, row));
 					Area a = frame.cellToArea(col, row, cell.colSpan, cell.rowSpan);
-					System.out.println("  built area: "+a);
+					//System.out.println("  built area: "+a);
 					areas.add(a);
 				}
 			}

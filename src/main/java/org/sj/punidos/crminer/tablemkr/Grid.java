@@ -144,7 +144,7 @@ public class Grid {
 			lineFound = false;
 			vertLine = false;
 			c = col;			
-			System.out.println(" r="+r);
+			//System.out.println(" r="+r);
 			while(c < lastCol  && !vertLine) {
 				lineFound |= grid[c][r].bottom;
 				vertLine |= grid[c][r].right;
