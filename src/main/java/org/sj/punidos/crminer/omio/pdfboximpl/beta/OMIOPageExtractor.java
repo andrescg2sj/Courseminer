@@ -49,7 +49,7 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.sj.punidos.crminer.sectorizer.StringRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
-import org.sj.punidos.crminer.sectorizer.RegionCluster;
+import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
 /**
  *
  * 
@@ -73,7 +73,7 @@ public class OMIOPageExtractor extends PDFGraphicsStreamEngine
 	File input;
 	
 	GStringBuffer region;
-	RegionCluster cluster;
+	StrRegionCluster cluster;
 	
 
 	/*
@@ -123,7 +123,7 @@ public class OMIOPageExtractor extends PDFGraphicsStreamEngine
     {
         super(page);
         region = new GStringBuffer();
-        cluster = new RegionCluster();
+        cluster = new StrRegionCluster();
     }
     
     /**

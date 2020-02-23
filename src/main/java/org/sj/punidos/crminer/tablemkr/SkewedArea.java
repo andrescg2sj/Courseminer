@@ -27,24 +27,24 @@ import java.awt.geom.Rectangle2D;
 
 public class SkewedArea extends Area
 {
-    Line top, left, right, bottom;
+    TLine top, left, right, bottom;
 
 
-    public boolean collision(Line l) {
+    public boolean collision(TLine l) {
 	throw new UnsupportedOperationException("Area.collision");
     }
 
-    public boolean collision(Line l, double tolerance) {
+    public boolean collision(TLine l, double tolerance) {
 	throw new UnsupportedOperationException("Area.collision(l,t)");
     }
 
-    public Area[] split(Line l) {
+    public Area[] split(TLine l) {
 	throw new UnsupportedOperationException("Area.split");
 	
     }
 
     
-    public  boolean outOrBound(Line l)
+    public  boolean outOrBound(TLine l)
     {
 	throw new UnsupportedOperationException("Area.split");
 	
@@ -55,7 +55,7 @@ public class SkewedArea extends Area
     }
 
 
-    public boolean strictlyContains(Line l) {
+    public boolean strictlyContains(TLine l) {
 	throw new UnsupportedOperationException("Area.strictlyContains");
     }
 

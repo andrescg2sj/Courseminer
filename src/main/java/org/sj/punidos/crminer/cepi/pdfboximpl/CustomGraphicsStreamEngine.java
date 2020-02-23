@@ -34,6 +34,9 @@ import java.awt.geom.Line2D;
 //import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.sectorizer.PosRegionCluster;
+import org.sj.punidos.crminer.sectorizer.Positionable;
+import org.sj.punidos.crminer.sectorizer.ContentRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 
 
@@ -43,7 +46,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
@@ -63,14 +68,12 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.sectorizer.StringRegion;
-import org.sj.punidos.crminer.sectorizer.GStringBuffer;
-import org.sj.punidos.crminer.sectorizer.RegionCluster;
+import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
 import org.sj.punidos.crminer.tablemkr.GridTableMaker;
-import org.sj.punidos.crminer.tablemkr.Line;
+import org.sj.punidos.crminer.tablemkr.TLine;
 import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 import org.sj.punidos.crminer.tablemkr.Table;
 import org.sj.punidos.crminer.tablemkr.TableMaker;
-import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 
 /**
  * 
@@ -101,8 +104,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 			+ "</head>";
 	
     GStringBuffer regionText = new GStringBuffer();
-    //LineManager linemg = new LineManager();
-    LinkedList<Line> lines = new LinkedList<Line>();
+    LinkedList<TLine> lines = new LinkedList<TLine>();
     LinkedList<GraphicString> gstrings = new LinkedList<GraphicString>();
     
     LinkedList<Table> generatedTables = new LinkedList<Table>(); 
@@ -120,66 +122,118 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
      * maximum thickness of a rectangle in order to be considered as a line.
      */
     double maxLineThickness = 2;
+
+    /**
+     * maximum distance of two objects to be considered in the same region (table).
+     */
+    double tableThreshold = 0.5;
+
 	
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
 	//TableMaker tmaker = new SplitTableMaker();
-    TableMaker tmaker = new GridTableMaker();
+    //TableMaker tmaker = new GridTableMaker();
     
-	public Rectangle rectFromLine(Line l) {
-		//TODO: Rectangle2D?
-		Rectangle r = new Rectangle();
-		r.setLocation((int) l.getA().getX(), (int) l.getA().getY());
-		r.add((int) l.getB().getX(), (int) l.getB().getY());;
-		r.grow(LineManager.MIN_THICKNESS, LineManager.MIN_THICKNESS); 
-		return r;
-	}
 
     
-    public void organizeLines()
+    public PosRegionCluster<Positionable> organizeContents()
     {
-		RegionCluster rc = new RegionCluster();
-    	for(Line l: lines) {
-    		rc.pushRegion(rectFromLine(l));
+		PosRegionCluster<Positionable> rc = new PosRegionCluster<Positionable>();
+		
+    	for(TLine l: lines) {
+    		if(l == null) {
+    			System.err.println("Attepmting ot add null line");
+    		} else {
+    			rc.push(l);
+    		}
     	}
-    	rc.meltRegions();
-    	
-    	for(int i=0;i<rc.getNumberOfRegions(); i++) {
-    		StringRegion r = rc.getRegion(i);
-    		
-        	for(Line l: lines) {
-        		if(r.contains(l.getA()) || r.contains(l.getB())) {
-        			
-        		}
-        	}
+    	System.out.println("lines added: "+rc.countRemaining());
+
+    	for(GraphicString gs: gstrings) {
+    		if(gs == null) {
+    			System.err.println("Attepmting ot add null GraphicString");
+    		} else {
+    			rc.push(gs);
+    		}
     	}
-   
+    	System.out.println("objects added: "+rc.countRemaining());
+
+    	rc.partitionContent(tableThreshold);
     	
+    	return rc;
     }
     
-    //TODO: refactor for multiple Tables
-    public void feedTableMaker() {
-    	//linemg.feedTableMaker(tmaker);
-    	for(Line l: lines) {
-    		tmaker.add(l);
+    public List<Table> createTables() {
+    	List<TableMaker> makers = createTableMakers();
+    	LinkedList<Table> tables = new LinkedList<Table>();
+    	for(TableMaker tm: makers) {
+    		Table t = tm.makeTable();
+    		if(t != null) {
+    			tables.add(t);
+    		}
     	}
-    	
-    	for(GraphicString gs: gstrings) {
-    		tmaker.add(gs);
+    	System.out.println("Tables created: "+tables.size());
+    	return tables;
+    }
+    
+    public List<TableMaker> createTableMakers() {
+    	PosRegionCluster<Positionable> cluster = organizeContents();
+    	LinkedList<TableMaker> makers = new LinkedList<TableMaker>();
+
+    	System.out.println("Regions: "+cluster.getNumberOfRegions());
+
+    	for(int i=0;i<cluster.getNumberOfRegions(); i++) {
+    		ContentRegion<Positionable> r = cluster.getRegion(i);
+    		GridTableMaker tmaker = new GridTableMaker();
+        	System.out.println("  Region: "+i);
+        	System.out.println("    elements: "+r.countElements());
+
+    		Iterator<Positionable> it = r.contentIterator();
+    		
+    		while(it.hasNext()) {
+    			Positionable obj = it.next();
+    			if(obj instanceof TLine) {
+    				TLine line = (TLine) obj;
+    				System.out.println("      line: "+line.toString());
+        			tmaker.add(line);
+    			} else if(obj instanceof GraphicString) {
+    				GraphicString gs = (GraphicString) obj;
+    				System.out.println("      gs: "+gs.toString());
+    				tmaker.add(gs);
+    			}
+    		}
+    		
+    		makers.add(tmaker);
     	}
+
+    	System.out.println("Makers: "+makers.size());
+   	
+    	return makers;
 
     }
     
     public void writeHTML(String filename) throws IOException {
     	File f = new File(filename);
     	FileOutputStream fos = new FileOutputStream(f);
-    	feedTableMaker();
-    	Table t = tmaker.makeTable();
-    	String s = t.toHTML();
+    	
+    	List<Table> tables = createTables();
     	
     	
     	fos.write((HTML_HEAD + "<body>").getBytes());
-    	fos.write(s.getBytes());
+
+    	for(Table t: tables) {
+    		Table clean = t.trim();
+    		if(clean == null) {
+    			fos.write("null table".getBytes());
+    		} else {
+    			String s = clean.toHTML();
+    			fos.write(s.getBytes());
+    		}
+			fos.write("<br/>".getBytes());
+
+    	}
     	fos.write("</body></html>".getBytes());
+
+    	
     	fos.close();
     	
     }
@@ -256,18 +310,18 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     }
     
     //FIXME: not necessary anymore
-    public Line buildLine(Point2D a, Point2D b) {
+    public TLine buildLine(Point2D a, Point2D b) {
     	//return new Line(transform(a), transform(b));
-    	return new Line(a, b);
+    	return new TLine(a, b);
     }
     
-    public Line buildVertLine(Rectangle2D rect) {
-    	return new Line(new Point2D.Double(rect.getCenterX(), rect.getY()),
+    public TLine buildVertLine(Rectangle2D rect) {
+    	return new TLine(new Point2D.Double(rect.getCenterX(), rect.getY()),
     			new Point2D.Double(rect.getCenterX(), rect.getMaxY()));
     }
 
-    public Line buildHorizLine(Rectangle2D rect) {
-    	return new Line(new Point2D.Double(rect.getX(), rect.getCenterY()),
+    public TLine buildHorizLine(Rectangle2D rect) {
+    	return new TLine(new Point2D.Double(rect.getX(), rect.getCenterY()),
     			new Point2D.Double(rect.getMaxX(), rect.getCenterY()));
     }
 
@@ -445,14 +499,16 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     			Rectangle2D rect = (Rectangle2D) s;
     			if(isVerticalStrip(rect,maxLineThickness)) {
     				if(nsclr.toRGB() == 0) {
-    					tmaker.add(buildVertLine(rect));
+    					//tmaker.add(buildVertLine(rect));
+    					lines.add(buildVertLine(rect));
     					this.lineCount++;
     				} else {
     					System.out.println("Non black vert. line");
     				}
     			} else if(isHorizontalStrip(rect,maxLineThickness)){
     				if(nsclr.toRGB() == 0) {
-    					tmaker.add(buildHorizLine(rect));
+    					//tmaker.add(buildHorizLine(rect));
+    					lines.add(buildHorizLine(rect));
     					this.lineCount++;
     				} else {
     					System.out.println("Non black horiz. line");

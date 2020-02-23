@@ -42,18 +42,18 @@ public abstract class Area
 	}
 
 
-    public abstract Area[] split(Line l);
+    public abstract Area[] split(TLine l);
 
     public abstract boolean contains(Point2D p);
 
     
     public abstract boolean contains(Rectangle r);
 
-    public abstract boolean outOrBound(Line l);
+    public abstract boolean outOrBound(TLine l);
 
 
     
-    public abstract boolean strictlyContains(Line l);
+    public abstract boolean strictlyContains(TLine l);
 
     public  abstract Rectangle2D getBounds();
 
@@ -62,16 +62,16 @@ public abstract class Area
      * collisionThreshold is used in order not to detect a collision
      * with a line very close to the border.
      */
-    public abstract boolean collision(Line l);
+    public abstract boolean collision(TLine l);
 
     /**
      * @param tolerance width of a border of this Area in which 
      * collsion is not detected.
      */
-    public abstract boolean collision(Line l, double tolerance);
+    public abstract boolean collision(TLine l, double tolerance);
 
     
-    public static Rectangle2D getMaximumRect(Line lines[]) {
+    public static Rectangle2D getMaximumRect(TLine lines[]) {
 	Point2D start = lines[0].getA();
 	Rectangle2D r = new Rectangle2D.Double(start.getX(), start.getY(),
 					       0,0);

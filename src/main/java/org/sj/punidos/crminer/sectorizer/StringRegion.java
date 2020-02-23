@@ -29,11 +29,17 @@ import java.util.List;
 import java.util.Vector;
 import static java.util.stream.Collectors.toList;
 
-public class StringRegion extends ContentRegion {
+public class StringRegion extends ContentRegion<GraphicString> {
+	
 	
 	public StringRegion(Rectangle2D r)
 	{
 		super(r);
+	}
+	
+	public StringRegion(ContentRegion<GraphicString> c) {
+		super(c);
+		
 	}
 	
 	/*public void add(GraphicString gs) {
@@ -41,6 +47,7 @@ public class StringRegion extends ContentRegion {
 	}*/
 	
 	//public static String getText(GraphicsString )
+	
 	
 	
 	

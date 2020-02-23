@@ -25,6 +25,8 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
+import org.sj.punidos.crminer.sectorizer.ContentRegion;
+
 
 public  class RectArea extends Area
 {
@@ -36,7 +38,7 @@ public  class RectArea extends Area
 	bounds = r;
     }
 
-    public RectArea(Line top, Line left, Line right, Line bottom) {
+    public RectArea(TLine top, TLine left, TLine right, TLine bottom) {
 	/*
 	top = t;
 	left = l;
@@ -75,23 +77,21 @@ public  class RectArea extends Area
 
     
 
-    public boolean collision(Line l) {
+    public boolean collision(TLine l) {
 	return bounds.intersectsLine(l.getLine2D());
     }
 
-    public boolean collision(Line l, double tolerance) {
+    public boolean collision(TLine l, double tolerance) {
 	Rectangle2D safeRect = reduceRect(bounds, tolerance);
 	return safeRect.intersectsLine(l.getLine2D());
     }
 
     public static Rectangle2D reduceRect(Rectangle2D r, double border) {
-	return new Rectangle2D.Double(r.getX() + border, r.getY() + border,
-				      r.getWidth() - border*2,
-				      r.getHeight() - border*2);
+    	return ContentRegion.expandRect(r,-border);
     }
 
 
-    public  Area[] split(Line l) {
+    public  Area[] split(TLine l) {
 	//Rectangle2D bounds = getBounds();
 	
 	if(!l.isAxisParallel())
@@ -136,7 +136,7 @@ public  class RectArea extends Area
 	    (p.getY() > bounds.getY());
     }
 
-    public boolean outOrBound(Line l) {
+    public boolean outOrBound(TLine l) {
 	return ((l.getA().getY() <= bounds.getY()) &&
 		(l.getB().getY() <= bounds.getY())) ||
 	    ((l.getA().getY() >= bounds.getMaxY()) &&
@@ -149,7 +149,7 @@ public  class RectArea extends Area
 	    
     }
 
-    public  boolean strictlyContains(Line l)
+    public  boolean strictlyContains(TLine l)
     {
 	return strictlyContains(l.getA()) && strictlyContains(l.getB());
     }
@@ -160,7 +160,7 @@ public  class RectArea extends Area
 	return bounds;
     }
 
-    public Area getMaximumArea(Line lines[])
+    public Area getMaximumArea(TLine lines[])
     {
 	return new RectArea(getMaximumRect(lines));
     }

@@ -14,9 +14,9 @@ public class SplitTableMaker extends TableMaker {
     }
 
 
-    private void logLines(Line lines[]) {
+    private void logLines(TLine lines[]) {
     	System.out.println("lines:" + lines.length);
-    	for(Line l: lines) {
+    	for(TLine l: lines) {
     		System.out.println("   "+l.toString());
     	}
     }
@@ -86,17 +86,17 @@ public class SplitTableMaker extends TableMaker {
     
     
    public Vector<Area> buildAreas() {
-    	Line lineArray[] = 	lines.toArray(new Line[lines.size()]);
+    	TLine lineArray[] = 	lines.toArray(new TLine[lines.size()]);
     	return buildAreas(lineArray);
     }
 
     public void reset() {
     	if(lines.size() > 0)
-    		lines = new Vector<Line>();
+    		lines = new Vector<TLine>();
     }
     
     
-    public Vector<Area> buildAreas(Line lineArray[]) {
+    public Vector<Area> buildAreas(TLine lineArray[]) {
     	//TODO: manage bad tables
     	Area fullArea = new RectArea(Area.getMaximumRect(lineArray));
     	System.out.println("FullArea:");
@@ -113,14 +113,14 @@ public class SplitTableMaker extends TableMaker {
 
     	areas.add(fullArea);
 
-    	Vector<Line> lines = new Vector<Line>(Arrays.asList(lineArray));
+    	Vector<TLine> lines = new Vector<TLine>(Arrays.asList(lineArray));
     	
     	//TODO: Is this algorithm optimal? Is there any redundancy?
     	while(lines.size() > 0) {
     		
     		for(int i=0; i<lines.size(); i++) {
     			int hits = 0;
-				Line l = lines.get(i);
+				TLine l = lines.get(i);
 	    	    for(int j=0;j<areas.size(); j++) {
 	    	    	Area a = areas.get(j);
 
@@ -143,7 +143,7 @@ public class SplitTableMaker extends TableMaker {
     }
 
 
-    public Vector<Area> buildAreas_old(Line lineArray[]) {
+    public Vector<Area> buildAreas_old(TLine lineArray[]) {
     	//TODO: manage bad tables
     	Area fullArea = new RectArea(Area.getMaximumRect(lineArray));
     	System.out.println("FullArea:");
@@ -160,7 +160,7 @@ public class SplitTableMaker extends TableMaker {
 
     	
     	//TODO: Refactor algorithm. Remove lines that don't collide with any Rectangle. 
-    	for(Line l: lineArray) {
+    	for(TLine l: lineArray) {
     	    //Vector<Area> newAreas = new Vector<Area>();
     	    
     	    for(int i=0;i<areas.size(); i++) {
@@ -206,13 +206,13 @@ public class SplitTableMaker extends TableMaker {
     /**
      * Remove bounding lines of 'a' in array
      */
-    public Line[] removeBounds(Area a, Line lines[]) {
-    	Vector<Line> out = new Vector<Line>(lines.length - 4);
-    	for(Line l: lines) {
+    public TLine[] removeBounds(Area a, TLine lines[]) {
+    	Vector<TLine> out = new Vector<TLine>(lines.length - 4);
+    	for(TLine l: lines) {
     		if(!a.outOrBound(l))
     			out.add(l);
     	}
-    	return out.toArray(new Line[out.size()]);
+    	return out.toArray(new TLine[out.size()]);
     }
 
     

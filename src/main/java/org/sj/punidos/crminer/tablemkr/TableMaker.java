@@ -35,14 +35,14 @@ public abstract class TableMaker
     
     Frame frame;
     
-    Vector<Line> lines;
+    Vector<TLine> lines;
     Vector<GraphicString> gstrings;
 
     /* debug */
     SvgTrace tracer = new SvgTrace();
 
     public TableMaker() {
-    	lines = new Vector<Line>();
+    	lines = new Vector<TLine>();
     	gstrings = new Vector<GraphicString>();
        
     }
@@ -54,7 +54,7 @@ public abstract class TableMaker
     	int i=0;
     	int j = lines.size()-1;
     	int allMarks[] = new int[lines.size()];
-    	for(Line l: lines) {
+    	for(TLine l: lines) {
     		if(l.isHoriz()) {
     			System.out.println(l.toString() + " is horziontal.");
     			allMarks[i++] = (int) l.getA().getY();
@@ -108,7 +108,7 @@ public abstract class TableMaker
     	return newValues;
     }
     
-    public void add(Line line) {
+    public void add(TLine line) {
     	lines.add(line);
     }
     

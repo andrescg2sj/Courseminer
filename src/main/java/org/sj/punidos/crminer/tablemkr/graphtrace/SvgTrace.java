@@ -49,7 +49,17 @@ public class SvgTrace implements CommonInfo {
 
     public String generateLogFilename() {
     	String timestamp = Utils.getTimestamp();
-    	return DST_PATH + "log" + timestamp +".svg";
+    	int number = 0;
+    	
+    	String path = DST_PATH + "log" + timestamp +"-" + number+".svg";
+    	File f = new File(path);
+    	while(f.exists()) {
+    		number++;
+        	path = DST_PATH + "log" + timestamp +"-" + number+".svg";
+        	f = new File(path);
+    	}
+    	
+    	return path;
     }
 
     public void exportAreasAndGStrings(Vector<Area> areas,

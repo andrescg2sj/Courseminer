@@ -119,7 +119,7 @@ public class Frame {
 		return new CellLocation(x_index, reverseIndexY(max_y_index-1), horizSpan, vertSpan);
     }
     
-    public CellLocation horizLineToLoc(Line line, double threshold) {
+    public CellLocation horizLineToLoc(TLine line, double threshold) {
     	/* FIXME: Sometimes pushes values out of table limits. */
     	int x_index = getClosestIndex(line.getA().getX(), this.x);
 		int y_index = getClosestIndex(line.getA().getY(), this.y);
@@ -132,7 +132,7 @@ public class Frame {
 		return new CellLocation(x_index, reverseIndexY(y_index-1), horizSpan, vertSpan);
     }
     
-    public CellLocation vertLineToLoc(Line line, double threshold) {
+    public CellLocation vertLineToLoc(TLine line, double threshold) {
     	/* FIXME: Sometimes pushes values out of table limits. */
 
     	int x_index = getClosestIndex(line.getA().getX(), this.x);
@@ -150,7 +150,7 @@ public class Frame {
     }
 
     
-    public CellLocation lineToLoc(Line line, double threshold) {
+    public CellLocation lineToLoc(TLine line, double threshold) {
     	if(line.isHoriz()) {
     		return horizLineToLoc(line,threshold);
     	}

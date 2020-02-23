@@ -39,7 +39,13 @@ public class Cell {
 		rowSpan = vspan;
 		contents = new Vector<GraphicString>();
 	}
-	
+
+	Cell(int hspan, int vspan, Vector<GraphicString> data) {
+		colSpan = hspan;
+		rowSpan = vspan;
+		contents = data;
+	}
+
 	public void add(GraphicString gstr) {
 		contents.add(gstr);
 	}
@@ -55,6 +61,10 @@ public class Cell {
     	} else {
     		contents = cont;
     	}
+    }
+    
+    public boolean isEmpty() {
+    	return contents.size() == 0;
     }
     
     public int numStrings() {

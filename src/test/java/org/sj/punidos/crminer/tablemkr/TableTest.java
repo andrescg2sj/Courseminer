@@ -42,4 +42,12 @@ public class TableTest {
 		assertTrue("1,0 ", table.get(1, 0) instanceof HiddenCell);
 
 	}
+	
+	@Test
+	public void testingSubTalbe() 
+	{
+		Table t = new Table(4,4);
+		
+	}
+	
 }

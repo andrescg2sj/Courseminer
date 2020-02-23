@@ -155,7 +155,7 @@ public class GridTableMaker extends TableMaker {
 		grid = new Grid(frame.numCols(), frame.numRows());
 		
 		// volver a recorrer. Rellenar CellBorders
-		for(Line l: lines) {
+		for(TLine l: lines) {
 			CellLocation cloc = frame.lineToLoc(l, collisionThreshold);
 			
 			//System.out.println("*line: "+l.toString());
