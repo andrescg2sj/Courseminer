@@ -45,6 +45,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -92,16 +93,6 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 	 * https://apache.googlesource.com/pdfbox/+/a3241d612d3ae387525d58d64b93b7804dde5939/pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFGraphicsStreamEngine.java
 	 */
 	
-	public static final String HTML_HEAD = 
-			"<html><head>"
-			+ "<style>table {\r\n" + 
-			"  border-collapse: collapse;\r\n" + 
-			"}\r\n" + 
-			"\r\n" + 
-			"table, th, td {\r\n" + 
-			"  border: 1px solid black;\r\n" + 
-			"}</style>"
-			+ "</head>";
 	
     GStringBuffer regionText = new GStringBuffer();
     LinkedList<TLine> lines = new LinkedList<TLine>();
@@ -162,6 +153,15 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	return rc;
     }
     
+    public <E> List<E> reverse(List<E> list) {
+    	LinkedList<E> reversed = new LinkedList<E>();
+    	Iterator<E> it = list.iterator();
+    	while(it.hasNext()) {
+    		reversed.push(it.next());
+    	}
+    	return reversed;
+    }
+    
     public List<Table> createTables() {
     	List<TableMaker> makers = createTableMakers();
     	LinkedList<Table> tables = new LinkedList<Table>();
@@ -172,7 +172,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     		}
     	}
     	System.out.println("Tables created: "+tables.size());
-    	return tables;
+    	return reverse(tables);
     }
     
     public List<TableMaker> createTableMakers() {
@@ -211,32 +211,23 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 
     }
     
-    public void writeHTML(String filename) throws IOException {
-    	File f = new File(filename);
-    	FileOutputStream fos = new FileOutputStream(f);
-    	
+    public void writeHTMLTables(OutputStreamWriter out) throws IOException {
     	List<Table> tables = createTables();
     	
-    	
-    	fos.write((HTML_HEAD + "<body>").getBytes());
-
     	for(Table t: tables) {
     		Table clean = t.trim();
     		if(clean == null) {
-    			fos.write("null table".getBytes());
+    			out.write("null table");
     		} else {
     			String s = clean.toHTML();
-    			fos.write(s.getBytes());
+    			out.write(s);
     		}
-			fos.write("<br/>".getBytes());
+			out.write("<br/>"+CommonInfo.NEW_LINE);
 
     	}
-    	fos.write("</body></html>".getBytes());
 
-    	
-    	fos.close();
-    	
     }
+    
 
     
     /**

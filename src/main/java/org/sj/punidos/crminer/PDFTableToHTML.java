@@ -22,14 +22,45 @@ package org.sj.punidos.crminer;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
+
+
 
 public class PDFTableToHTML implements CommonInfo
 {
     static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
     //static String DEFAULT_PATH = "res/test-1cell.pdf";
+    
+	public static final String HTML_HEAD = 
+			"<html><head>"
+			+ "<style>table {\r\n" + 
+			"  border-collapse: collapse;\r\n" + 
+			"}\r\n" + 
+			"\r\n" + 
+			"table, th, td {\r\n" + 
+			"  border: 1px solid black;\r\n" + 
+			"}</style>"
+			+ "</head>";
+
+    File file; 
+    PDDocument doc;
+    
+    public PDFTableToHTML(String path) {
+    	file = new File(path);
+    }
     
     public static void createDestDirectory() {
     	 File dir = new File(DST_PATH);
@@ -57,54 +88,106 @@ public class PDFTableToHTML implements CommonInfo
     	int height = Integer.parseInt(parts[3]);
     	return new Rectangle(x,y,width,height);
     }
+    
+    public void writeHTMLHead(OutputStreamWriter out) throws IOException
+    {
+    	out.write(HTML_HEAD + "<body>");
+    }
+
+    public void writeHTMLTail(OutputStreamWriter out) throws IOException
+    {
+    	out.write("</body></html>");
+    }
+
+    
+    public void run(Rectangle clipRect)
+    {
+    	String filename = DST_PATH + "doc"+Utils.getTimestamp()+".htm";
+    	
+    	try {
+    		createDestDirectory();
+
+    		File f = new File(filename);
+        	FileOutputStream fos = new FileOutputStream(f);
+        	OutputStreamWriter out = new OutputStreamWriter(fos);
+
+        	writeHTMLHead(out);
+
+    	    doc = PDDocument.load(file);
+    	    for(int i=0; i< doc.getNumberOfPages(); i++) {
+    	    	PDPage page = doc.getPage(i);
+    	    	CustomGraphicsStreamEngine engine =
+    	    			new CustomGraphicsStreamEngine(page, clipRect);
+    	    	engine.run();
+        	    engine.writeHTMLTables(out);
+    	    }
+    	    doc.close();
+    	    
+    	    writeHTMLTail(out);
+        	out.close();
+
+    	    	
+    	    //System.out.println("------------------");
+    	    //System.out.println(engine.cluster.toHTML());
+            
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	}
+
+    }
 
 
     public static void main(String args[]) {
-	String path = DEFAULT_PATH;
-	//main table
-	//Rectangle clipArea =  new Rectangle(0,190,583, 381);
-	//Title: Formación laboral
-	//Rectangle clipArea =  new Rectangle(0,562,583, 40);
-	Rectangle clipRect =  null;	
-	
-	
-	if(args.length > 0) {
-	    path = args[0];
-	    
-    	clipRect = null;
-	    if(args.length > 1) {
-	    	clipRect = parseDimensions(args[1]);
-	    	System.out.println("Clipping rectangle:"+ clipRect.toString());
-	    }
-	} else {
-	    System.out.println("Usage: PDFTableToHTML [path] [x,y,widht,height]");
-	    System.out.println();
-	    System.out.println("       path: path to PDF file");
-	    System.out.println("       x,y,widht,height: dimensions of clipping area.");
-	    System.out.println();
-	    System.out.println("No arguments. Using default path.");
-	}
+		String path = DEFAULT_PATH;
+		Rectangle clipRect =  null;	
+		
+		Options options = new Options();
 
-	try {
-		createDestDirectory();
+        Option output = new Option("o", "output", true, "output file");
+        output.setRequired(false);
+        options.addOption(output);
 
-	    File file = new File(path);
-	    PDDocument doc = PDDocument.load(file);
-	    PDPage page = doc.getPage(0);
-	    //CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
-	    // 108,0,720,583
-	    CustomGraphicsStreamEngine engine =
-		new CustomGraphicsStreamEngine(page, clipRect);
-	    engine.run();
-	    doc.close();
-	    //System.out.println("------------------");
-	    //System.out.println(engine.cluster.toHTML());
+        Option clip = new Option("c", "clip", true, "format: x,y,width,height");
+        output.setRequired(false);
+        options.addOption(clip);
+
         
-	    engine.writeHTML(DST_PATH + "doc"+Utils.getTimestamp()+".htm");
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
 
+        try {
+            cmd = parser.parse(options, args);
+            
+            String remaining[] = cmd.getArgs();
+
+            if(cmd.hasOption("c")) {
+		    	clipRect = parseDimensions(cmd.getOptionValue("c"));
+		    	System.out.println("Clipping rectangle:"+ clipRect.toString());
+		    } else {
+		    	System.out.println("NO CLIP");
+		    }
+    		
+    		if(remaining.length > 0) {
+    		    path = args[0];
+    		} else {
+    		    System.out.println("No filename given. Using default path.");
+    		}
+    		
+    		System.out.println("Reading: "+path);
+    		PDFTableToHTML proc = new PDFTableToHTML(path);
+    		proc.run(clipRect);
+    	
+
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            
+            System.out.println("PDFTableToHTML [OPTIONS] [PDF-filename-in]");
+            formatter.printHelp("utility-name", options);
+
+            System.exit(1);
+        }
+		
 
 	
     }
