@@ -58,8 +58,17 @@ public class PDFTableToHTML implements CommonInfo
     File file; 
     PDDocument doc;
     
+    String dstFilename;
+    
+    double maxLineThickness = CustomGraphicsStreamEngine.DEFAULT_THICKNESS;
+	double minProximity = CustomGraphicsStreamEngine.DEFAULT_PROXIMITY;
+    		
+    
     public PDFTableToHTML(String path) {
     	file = new File(path);
+    	
+    	dstFilename = DST_PATH + "doc"+Utils.getTimestamp()+".htm";
+        
     }
     
     public static void createDestDirectory() {
@@ -102,22 +111,23 @@ public class PDFTableToHTML implements CommonInfo
     
     public void run(Rectangle clipRect)
     {
-    	String filename = DST_PATH + "doc"+Utils.getTimestamp()+".htm";
     	
     	try {
     		createDestDirectory();
 
-    		File f = new File(filename);
+    		File f = new File(dstFilename);
         	FileOutputStream fos = new FileOutputStream(f);
         	OutputStreamWriter out = new OutputStreamWriter(fos);
 
         	writeHTMLHead(out);
+        	
 
     	    doc = PDDocument.load(file);
     	    for(int i=0; i< doc.getNumberOfPages(); i++) {
     	    	PDPage page = doc.getPage(i);
     	    	CustomGraphicsStreamEngine engine =
-    	    			new CustomGraphicsStreamEngine(page, clipRect);
+    	    			new CustomGraphicsStreamEngine(page, clipRect, 
+    	    					maxLineThickness, minProximity);
     	    	engine.run();
         	    engine.writeHTMLTables(out);
     	    }
@@ -151,6 +161,15 @@ public class PDFTableToHTML implements CommonInfo
         output.setRequired(false);
         options.addOption(clip);
 
+        Option optThickness = new Option("t", "thickness", true, "máximum line thickness");
+        output.setRequired(false);
+        options.addOption(optThickness);
+
+        Option optProximity = new Option("p", "proximity", true, "minimum distance between tables");
+        output.setRequired(false);
+        options.addOption(optProximity);
+        
+
         
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -176,6 +195,19 @@ public class PDFTableToHTML implements CommonInfo
     		
     		System.out.println("Reading: "+path);
     		PDFTableToHTML proc = new PDFTableToHTML(path);
+    		
+    		if(cmd.hasOption("t")) {
+    			proc.maxLineThickness = Double.parseDouble(cmd.getOptionValue("t"));
+    		}
+    		
+    		if(cmd.hasOption("p")) {
+    			proc.minProximity = Double.parseDouble(cmd.getOptionValue("p"));
+    		}
+    		
+    		if(cmd.hasOption("o")) {
+    			proc.dstFilename = cmd.getOptionValue("o"); 
+    		}
+    		
     		proc.run(clipRect);
     	
 

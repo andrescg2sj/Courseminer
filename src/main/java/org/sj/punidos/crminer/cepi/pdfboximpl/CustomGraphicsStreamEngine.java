@@ -109,15 +109,18 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 	ClippingArea clip;
     GrPath path = new GrPath();
     
+    public static final double DEFAULT_THICKNESS = 2;
+    public static final double DEFAULT_PROXIMITY = 0.5;
+    
     /**
      * maximum thickness of a rectangle in order to be considered as a line.
      */
-    double maxLineThickness = 2;
+    double maxLineThickness = DEFAULT_THICKNESS;
 
     /**
      * maximum distance of two objects to be considered in the same region (table).
      */
-    double tableThreshold = 0.5;
+    double tableThreshold = DEFAULT_PROXIMITY;
 
 	
 	//java.util.Vector<Line> lines = new java.util.Vector<Line>();
@@ -251,7 +254,16 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
         super(page);
         clip = new ClippingArea(clipRect);
     }
+
     
+    public CustomGraphicsStreamEngine(PDPage page, Rectangle clipRect, double thickness, double proximity)
+    {
+        super(page);
+        clip = new ClippingArea(clipRect);
+        maxLineThickness = thickness;
+        tableThreshold = proximity;
+    }
+
 
     
     /**

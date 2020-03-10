@@ -110,7 +110,12 @@ public class PosRegionCluster<E extends Positionable>  {
 		v.set(j, s);
 	}
 	
-	public void sortRegions() {
+	public void sortRegions()
+	{
+		sortRegions(false);
+	}
+	
+	public void sortRegions(boolean reverse) {
 		//TODO: See https://stackoverflow.com/questions/2072032/what-function-can-be-used-to-sort-a-vector
 		// See Comparable, Comparator
 		
@@ -121,8 +126,9 @@ public class PosRegionCluster<E extends Positionable>  {
 			
 			for(int j=i+1; j<regions.size();j++) {
 				ContentRegion<E> s = regions.get(j);
-					
-				if(previousPos(s,r)) {
+	
+				//TODO: possible useless swaps when reverse sorting.
+				if(previousPos(s,r) ^ reverse) {
 					//FIXME: Is this clear enough? Good design?
 					swap(regions,i,j);
 					r = regions.get(i);
@@ -192,8 +198,14 @@ public class PosRegionCluster<E extends Positionable>  {
 	
 	public void partitionContent(double threshold)
 	{
+		partitionContent(threshold, false);
+	}
+
+	
+	public void partitionContent(double threshold, boolean reverse)
+	{
 		remainingToRegions(threshold);
-		sortRegions();
+		sortRegions(reverse);
 		System.out.println("Sorted: ");
 		for(ContentRegion<E> cr: regions) {
 			System.out.println("  "+cr.getBounds());
