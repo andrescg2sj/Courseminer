@@ -1,7 +1,28 @@
 
+A brief presentation
+======
+
+The objective of this project is to gather information about formation courses contained in documents made by different entities in Madrid, Spain.
+
+Current version of the project is able to extract tables from some PDF files and write them to an HTML file.
+
+Compile with dependencies:
+
+```
+mvn compile package assembly:single
+```
+
+Test with:
+```
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar org.sj.punidos.crminer.PDFTableToHTML res/CEPI-1-1.pdf -o test.htm
+```
+
+You can find a little more information [on the wiki](https://github.com/andrescg2sj/Courseminer/wiki/Full-page-HTML-export-starting-to-work).
+
 
 Presentación
 =====
+
 
 Este proyecto surge con la intención de apoyar el servicio prestado por [Pueblos Unidos](http://pueblosunidos.org/) en la Comunidad de Madrid para facilitar la [búsquedad de cursos de formación](https://voluntariadopueblosunidosv09.firebaseapp.com/#/main), como ayuda a la búsqueda de empleo.
 
