@@ -57,8 +57,6 @@ public class GridTableMaker extends TableMaker {
 	}
 	
 	public static Table fromGrid(Grid g) {
-		System.out.println(" --- ");
-		g.log();
 		
 		GridTableMaker maker = new GridTableMaker(g);
 		//return maker.makeFromGrid();
