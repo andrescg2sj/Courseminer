@@ -47,10 +47,10 @@ Compilar con dependencias:
 mvn compile package assembly:single
 ```
 
-Ejecutar `PDFTableToHTML`:
+Probar `PDFTableToHTML`:
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar org.sj.punidos.crminer.PDFTableToHTML
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar org.sj.punidos.crminer.PDFTableToHTML res/CEPI-1-1.pdf -o test.htm
 ```
 
 
