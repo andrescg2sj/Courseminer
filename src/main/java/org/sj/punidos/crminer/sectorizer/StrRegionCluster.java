@@ -21,6 +21,7 @@
 package org.sj.punidos.crminer.sectorizer;
 
 import java.awt.geom.Rectangle2D;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,9 +39,52 @@ public class StrRegionCluster extends PosRegionCluster<GraphicString> implements
 		super();
 	}
 	
+	public StrRegionCluster(PosRegionCluster<GraphicString> prc) {
+		super(prc);
+	}
 	
+	public Vector<StrRegionCluster> strRCDivideY(double y_coord) {
+		Vector<PosRegionCluster<GraphicString>> vect =  super.divideY(y_coord);
+		Vector<StrRegionCluster> strVect = new Vector<StrRegionCluster>();
+		for(PosRegionCluster<GraphicString> prc : vect) {
+			strVect.add(new StrRegionCluster(prc));
+		}
+		return strVect;
+	}
+	
+	public void filterCopy(PosRegionCluster<Positionable> cluster) {
+		for(ContentRegion<Positionable> cr: cluster.regions) {
+			ContentRegion<GraphicString> crs = new ContentRegion<GraphicString>(cr.getBounds()); 
+			for(Positionable p: cr.contents) {
+				if(p instanceof GraphicString) {
+					crs.add((GraphicString) p);
+				}
+			}
+			this.pushRegion(crs);
+		}
+	}
 
 	
+	public ContentRegion<GraphicString> find(String text) {
+		for(ContentRegion<GraphicString> cr: regions) {
+			GraphicString gs = findInRegion(cr, text);
+			if(gs != null) {
+				return cr;
+			}
+		}
+		return null;
+	}
+	
+	public static GraphicString findInRegion(ContentRegion<GraphicString> cr, String text) {
+		Iterator<GraphicString> it = cr.contentIterator();
+		while(it.hasNext()) {
+			GraphicString gs = it.next();
+			if(gs.getText().contains(text)) {
+				return gs;
+			}
+		}
+		return null;
+	}
 
 	
 	public List<String> allStrings() {
@@ -84,6 +128,8 @@ public class StrRegionCluster extends PosRegionCluster<GraphicString> implements
 		}
 		return s.toString();
 	}
+	
+
 	
 	
 

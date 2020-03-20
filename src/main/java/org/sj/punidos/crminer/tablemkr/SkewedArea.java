@@ -49,6 +49,11 @@ public class SkewedArea extends Area
 	throw new UnsupportedOperationException("Area.split");
 	
     }
+    
+	public boolean containsMost(Rectangle2D r) {
+		throw new UnsupportedOperationException("Area.containsMost");
+	}
+
 
     public boolean contains(Point2D p) {
 	throw new UnsupportedOperationException("Area.contains");
@@ -64,7 +69,7 @@ public class SkewedArea extends Area
     }
 
 	@Override
-	public boolean contains(Rectangle r) {
+	public boolean contains(Rectangle2D r) {
 		// TODO Auto-generated method stub
 		//return false;
 		throw new UnsupportedOperationException("SkewedArea.contains(Rectangle)");

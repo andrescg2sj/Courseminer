@@ -54,6 +54,7 @@ public class GridTableMakerTest {
 		g.setAll();
 		//g.setBottom(0, 2, false);
 		g.setBottom(2, 1, false);
+		//g.log();
 		t = GridTableMaker.fromGrid(g);
 		assertEquals("table 4. colSpan", 1,t.getCell(2, 1).colSpan);
 		assertEquals("table 4. rowSpan", 2,t.getCell(2, 1).rowSpan);

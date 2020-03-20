@@ -3,6 +3,8 @@ package org.sj.punidos.crminer.sectorizer;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -55,24 +57,59 @@ public class ContentRegion<E extends Positionable> implements Positionable {
 		contents = new Vector<E>();
 	}
 	
-	public boolean contains(ContentRegion<E> r) {
-		return region.contains(r.region);
+	
+	public boolean contains(Positionable gs) {
+		return region.contains(gs.getBounds());
 	}
+
 	
 	public boolean contains(Point2D p) {
 		return region.contains(p);
 	}
-
 	
-	public boolean intersects(ContentRegion cr) {
+	public static double area(Rectangle2D rect) {
+		return rect.getWidth()*rect.getHeight();
+	}
+	
+	public boolean containsMost(Positionable r) {
+		return containsMost(r.getBounds());
+	}
+	
+	public static double sharedArea(Rectangle2D a, Rectangle2D b) {
+		if(!a.intersects(b)) return 0;
+		Rectangle2D i = a.createIntersection(b);
+		return area(i)/area(b);
+		
+	}
+	
+	public static boolean containsMost(Rectangle2D a, Rectangle2D b) {
+		return sharedArea(a,b) > 0.5;
+		
+	}
+	
+	public boolean containsMost(Rectangle2D rect) {
+		/*
+		Rectangle2D i = region.createIntersection(rect);
+		if(i == null)
+			return false;
+		return area(i)/area(rect) > 0.5;
+		*/
+		return containsMost(region, rect);
+	}
+
+	public void setRegion(Rectangle2D r) {
+		region = r;
+	}
+	
+	public boolean intersects(ContentRegion<E> cr) {
 		return region.intersects(cr.region);
 	}
 	
-
-	
-	public boolean contains(E gs) {
-		return region.contains(gs.getBounds());
+	public E get(int i) {
+		return contents.get(i);
 	}
+ 
+	
 	
 	public int countElements()
 	{
@@ -96,9 +133,76 @@ public class ContentRegion<E extends Positionable> implements Positionable {
 		return new Rectangle2D.Double(rect.getX() - border, rect.getY() - border,
 				rect.getWidth() + border*2,
 				rect.getHeight() + border*2);
-
 	}
 	
+	public void mutiply(double factor) {
+		region = MultiplyTransform.multiplyRect(region, factor);
+	}
+	
+	public static Rectangle2D cloneRect2D(Rectangle2D r) {
+		return new Rectangle2D.Double(r.getMinX(),r.getMinY(),r.getWidth(),r.getHeight());
+	}
+	
+	
+	public void sortContents(Comparator<Positionable> c) {
+		contents.sort(c);
+	}
+
+	public void sortContents() {
+		sortContents(NormalComparator.getInstance());
+	}
+
+	
+	public void sortReverseY() {
+		sortContents(ReverseYComparator.getInstance());
+	}
+	
+	@Deprecated
+	public void sortReverseY_old() {
+
+		for(int i=0; i< contents.size(); i++) {
+			
+			E r = contents.get(i);
+			
+			for(int j=i+1; j<contents.size();j++) {
+				E s = contents.get(j);
+	
+				//TODO: possible useless swaps when reverse sorting.
+				if(previousPosRY(s,r) ) {
+					//FIXME: Is this clear enough? Good design?
+					swap(contents,i,j);
+					r = contents.get(i);
+				}
+			}
+			
+		}
+	}
+	
+	@Deprecated
+	public void sortContents(boolean reverse) {
+		//TODO: See https://stackoverflow.com/questions/2072032/what-function-can-be-used-to-sort-a-vector
+		// See Comparable, Comparator
+		
+		/* bubble algorithm. Low efficiency, but acceptable for this purpose */
+		for(int i=0; i< contents.size(); i++) {
+			
+			E r = contents.get(i);
+			
+			for(int j=i+1; j<contents.size();j++) {
+				E s = contents.get(j);
+	
+				//TODO: possible useless swaps when reverse sorting.
+				if(NormalComparator.previousPos(s,r) ^ reverse) {
+					//FIXME: Is this clear enough? Good design?
+					swap(contents,i,j);
+					r = contents.get(i);
+				}
+			}
+			
+		}
+		
+	}
+
 
 	@Override
 	public Point2D getPosition() {
@@ -113,6 +217,18 @@ public class ContentRegion<E extends Positionable> implements Positionable {
 	{
 		return contents.iterator();
 	}
+
+	public static <E> void swap(Vector<E> v, int i, int j) {
+		E s = v.get(i);
+		v.set(i, v.get(j));
+		v.set(j, s);
+	}
+
+	public static boolean previousPosRY(Positionable a, Positionable b) {
+		return (a.getPosition().getY() > b.getPosition().getY()) ||
+				(a.getPosition().getY() == b.getPosition().getY()) &&
+				(a.getPosition().getX() < b.getPosition().getX());
 	
+	}
 
 }

@@ -76,11 +76,14 @@ import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 import org.sj.punidos.crminer.tablemkr.Table;
 import org.sj.punidos.crminer.tablemkr.TableMaker;
 
+import java.util.logging.Logger;
+
 /**
  * 
  */
 public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implements CommonInfo
 {
+	Logger log = Logger.getLogger("CustomGraphicsStreamEngine");
 	
 	/*
 	 * 
@@ -132,7 +135,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     public PosRegionCluster<Positionable> organizeContents()
     {
 		PosRegionCluster<Positionable> rc = new PosRegionCluster<Positionable>();
-		
+    	
     	for(TLine l: lines) {
     		if(l == null) {
     			System.err.println("Attepmting ot add null line");
@@ -140,7 +143,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     			rc.push(l);
     		}
     	}
-    	System.out.println("lines added: "+rc.countRemaining());
+    	log.finest("lines added: "+rc.countRemaining());
 
     	for(GraphicString gs: gstrings) {
     		if(gs == null) {
@@ -149,7 +152,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     			rc.push(gs);
     		}
     	}
-    	System.out.println("objects added: "+rc.countRemaining());
+    	log.finest("objects added: "+rc.countRemaining());
 
     	rc.partitionContent(tableThreshold);
     	
@@ -174,21 +177,36 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     			tables.add(t);
     		}
     	}
-    	System.out.println("Tables created: "+tables.size());
+    	log.finest("Tables created: "+tables.size());
     	return reverse(tables);
     }
+    
+    /*
+    public StrRegionCluster getStrings(PosRegionCluster<Positionable> cluster) {
+    	for(int i=0; i<)
+    }*/
     
     public List<TableMaker> createTableMakers() {
     	PosRegionCluster<Positionable> cluster = organizeContents();
     	LinkedList<TableMaker> makers = new LinkedList<TableMaker>();
 
-    	System.out.println("Regions: "+cluster.getNumberOfRegions());
+    	log.info("Regions: "+cluster.getNumberOfRegions());
+    	log.info("Remaining: "+cluster.countRemaining());
+    	
+    	StrRegionCluster strctr = new StrRegionCluster();
+    	strctr.filterCopy(cluster);
+    	
+    	ContentRegion<GraphicString> cr = strctr.find("Actividades");
+    	if(cr != null) {
+    		log.info("Found. elements:"+cr.countElements());
+    	}
+    	
 
     	for(int i=0;i<cluster.getNumberOfRegions(); i++) {
     		ContentRegion<Positionable> r = cluster.getRegion(i);
     		GridTableMaker tmaker = new GridTableMaker();
-        	System.out.println("  Region: "+i);
-        	System.out.println("    elements: "+r.countElements());
+        	log.info("  Region*: "+i);
+        	log.info("    elements: "+r.countElements());
 
     		Iterator<Positionable> it = r.contentIterator();
     		
@@ -196,11 +214,14 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     			Positionable obj = it.next();
     			if(obj instanceof TLine) {
     				TLine line = (TLine) obj;
-    				System.out.println("      line: "+line.toString());
+    				log.finest("      line: "+line.toString());
         			tmaker.add(line);
     			} else if(obj instanceof GraphicString) {
     				GraphicString gs = (GraphicString) obj;
-    				System.out.println("      gs: "+gs.toString());
+    				log.finest("      gs: "+gs.toString());
+    				if(gs.getText().contains("Actividades")) {
+    					log.info("Found - Actividades");
+    				}
     				tmaker.add(gs);
     			}
     		}
@@ -208,7 +229,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     		makers.add(tmaker);
     	}
 
-    	System.out.println("Makers: "+makers.size());
+    	log.finest("Makers: "+makers.size());
    	
     	return makers;
 
@@ -285,10 +306,10 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     }
     
     void showStats() {
-    	System.out.println("strokes:"+strokeCount);
-    	System.out.println("lines:"+lineCount);
-    	System.out.println("rectangles:"+rectCount);
-    	System.out.println("size H:"+getPage().getBBox().getHeight());
+    	log.finest("strokes:"+strokeCount);
+    	log.finest("lines:"+lineCount);
+    	log.finest("rectangles:"+rectCount);
+    	log.finest("size H:"+getPage().getBBox().getHeight());
     }
     
     @Deprecated
@@ -341,9 +362,9 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
-         System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
+         log.finest(String.format("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
                 p0.getX(), p0.getY(), p1.getX(), p1.getY(),
-                p2.getX(), p2.getY(), p3.getX(), p3.getY()); 
+                p2.getX(), p2.getY(), p3.getX(), p3.getY())); 
         //FIXME:
     	//strokeRectangle(p0,p1,p2,p3);
         /*
@@ -363,9 +384,9 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 
         Rectangle2D r = StringRegion.rectangleFromPoints(p0,p1,p2,p3);
         if(clip.clip(r)) {
-            System.out.printf("strokeRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
+            log.finest(String.format("strokeRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
                     p0.getX(), p0.getY(), p1.getX(), p1.getY(),
-                    p2.getX(), p2.getY(), p3.getX(), p3.getY());
+                    p2.getX(), p2.getY(), p3.getX(), p3.getY()));
             /* add rectangle */
             /*tmaker.add(buildLine(p0, p1));
             tmaker.add(buildLine(p1, p2));
@@ -381,7 +402,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
             rectCount++;
 
         } else {
-        	System.out.printf("discarded rect");
+        	log.finest(String.format("discarded rect"));
         }
         //cluster.pushRegion(r);
     }
@@ -389,13 +410,13 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void drawImage(PDImage pdImage) throws IOException
     {
-        System.out.println("drawImage");
+        log.finest("drawImage");
     }
     
     @Override
     public void clip(int windingRule) throws IOException
     {
-        System.out.println("clip");
+        log.finest("clip");
     }
     
     @Override
@@ -404,7 +425,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	//region.reset();
     	//region.add(new Point((int)x,(int)y));
 	path.moveTo(new Point2D.Float(x,y));
-        System.out.printf("moveTo %.2f %.2f\n", x, y);
+        log.finest(String.format("moveTo %.2f %.2f\n", x, y));
     }
     @Override
     public void lineTo(float x, float y) throws IOException
@@ -413,7 +434,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	lineCount++;
     	path.lineTo(new Point2D.Float(x,y));
 
-        System.out.printf("lineTo %.2f %.2f\n", x, y);
+        log.finest(String.format("lineTo %.2f %.2f\n", x, y));
     }
     @Override
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
@@ -421,7 +442,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	//region.add(new Point((int)x1,(int)y1));
     	//region.add(new Point((int)x2,(int)y2));
     	//region.add(new Point((int)x3,(int)y3));
-    	System.out.printf("curveTo %.2f %.2f, %.2f %.2f, %.2f %.2f\n", x1, y1, x2, y2, x3, y3);
+    	log.finest(String.format("curveTo %.2f %.2f, %.2f %.2f, %.2f %.2f\n", x1, y1, x2, y2, x3, y3));
     }
     
     @Override
@@ -434,13 +455,13 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void closePath() throws IOException
     {
-        System.out.println("closePath");
+        log.finest("closePath");
     }
     
     @Override
     public void endPath() throws IOException
     {
-        System.out.println("endPath");
+        log.finest("endPath");
     }
     
     void pushCurrent() {
@@ -469,7 +490,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
 		}
 	}
 	strokeCount += linCnt;
-        System.out.println("strokePath("+linCnt+")");
+        log.finest("strokePath("+linCnt+")");
 	path.clear();
     }
     
@@ -487,11 +508,11 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	 */
     	PDGraphicsState gs = this.getGraphicsState();
     	PDColor clr = gs.getStrokingColor();
-        System.out.println("fillPath (color="+clr.toRGB()+")");
+        log.finest("fillPath (color="+clr.toRGB()+")");
         PDColor nsclr = gs.getNonStrokingColor();
-        System.out.println("         (non stroking="+nsclr.toRGB()+")");
+        log.finest("         (non stroking="+nsclr.toRGB()+")");
         
-        System.out.println("         (path:"+path.numElements()+")");
+        log.finest("         (path:"+path.numElements()+")");
     	Iterable<Shape> elems = path.getIterable();
     	int linCnt = 0;
     	for(Shape s : elems) {
@@ -506,7 +527,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     					lines.add(buildVertLine(rect));
     					this.lineCount++;
     				} else {
-    					System.out.println("Non black vert. line");
+    					log.finest("Non black vert. line");
     				}
     			} else if(isHorizontalStrip(rect,maxLineThickness)){
     				if(nsclr.toRGB() == 0) {
@@ -514,7 +535,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     					lines.add(buildHorizLine(rect));
     					this.lineCount++;
     				} else {
-    					System.out.println("Non black horiz. line");
+    					log.finest("Non black horiz. line");
     				}
     			}
     		}
@@ -536,22 +557,22 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void fillAndStrokePath(int windingRule) throws IOException
     {
-        System.out.println("fillAndStrokePath");
+        log.finest("fillAndStrokePath");
     }
     
     @Override
     public void shadingFill(COSName shadingName) throws IOException
     {
-        System.out.println("shadingFill " + shadingName.toString());
+        log.finest("shadingFill " + shadingName.toString());
     }
     
     
-    static void dbg_showbytes(byte data[]) {
+    void dbg_showbytes(byte data[]) {
     	for(byte b: data) {
-    		System.out.println(String.format("0x%x ",b));
+    		log.finest(String.format("0x%x ",b));
     	}
     	
-		System.out.println();
+		//log.finest();
     }
     
     /**
@@ -562,9 +583,9 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void showTextString(byte[] string) throws IOException
     {
-        System.out.print("showTextString \"");
+        //System.out.print("showTextString \"");
         super.showTextString(string);
-        System.out.println("\"");
+        //System.out.println("\"");
         //COSArray str = new COSArray();
         
         Rectangle r = regionText.getRegion();
@@ -573,7 +594,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
         	throw new NullPointerException("regionText.region");
         }
         gstrings.add(new GraphicString(regionText.getText(), r));
-        System.out.println("  -REG:"+regionText.getText());
+        log.fine("add string:"+regionText.getText());
          
         regionText.reset();
     }
@@ -585,9 +606,9 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     @Override
     public void showTextStrings(COSArray array) throws IOException
     {
-        System.out.print("showTextStrings \"");
+        //System.out.print("showTextStrings \"");
         super.showTextStrings(array);
-        System.out.println("\"");
+        //System.out.println("\"");
 
         Rectangle r = regionText.getRegion();
         if(r == null) {
@@ -596,12 +617,12 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
         }
         if(clip.clip(r)) {
         	gstrings.add(new GraphicString(regionText.getText(), r));
-        	System.out.println(regionText.getText());
+        	log.fine("add strings: " +regionText.getText());
         }
         
         regionText.reset();
 
-        //System.out.println("  "+r.toString());
+        //log.finest("  "+r.toString());
   
     }
     /**
@@ -611,7 +632,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
                              Vector displacement) throws IOException
     {
-        System.out.print(unicode);
+        //System.out.print(unicode);
 
         //showVector(displacement);
         //Vector w = font.getDisplacement(code);

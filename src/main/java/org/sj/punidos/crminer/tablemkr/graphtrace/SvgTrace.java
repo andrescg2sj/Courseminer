@@ -20,6 +20,7 @@
 
 package org.sj.punidos.crminer.tablemkr.graphtrace;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.Point;
 import java.util.Vector;
@@ -111,7 +112,7 @@ public class SvgTrace implements CommonInfo {
 
     
     public String gstrToSvg(GraphicString gstr) {
-	Point p = gstr.getPosition();
+	Point2D p = gstr.getPosition();
 	String svgBounds = svgRectangle(gstr.getBounds(),"red"); 
 	String svgText = String.format(Locale.ROOT, "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\">%s</text>",
 		      p.getX(), p.getY(), gstr.getText()); 

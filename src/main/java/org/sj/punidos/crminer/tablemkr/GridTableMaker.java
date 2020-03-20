@@ -57,11 +57,14 @@ public class GridTableMaker extends TableMaker {
 	}
 	
 	public static Table fromGrid(Grid g) {
+		//System.out.println(" --- ");
+		//g.log();
 		
 		GridTableMaker maker = new GridTableMaker(g);
 		//return maker.makeFromGrid();
 		//return new Table(maker.cellMatrix());
-		Table table = new Table(g.numCols(), g.numRows());
+		//Table table = new Table(g.numCols(), g.numRows());
+		Table table = Table.emptyTable(g.numCols(), g.numRows());
 		maker.fillTable(table);
 		return table;
 	}
@@ -144,7 +147,7 @@ public class GridTableMaker extends TableMaker {
 		
 		//make frame from lines
 		frame = buildFrame();
-		frame.log();
+		//frame.log();
 		
 		if(frame.numCols() == 0 || frame.numRows() == 0) {
 			return null;

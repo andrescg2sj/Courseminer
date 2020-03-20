@@ -23,6 +23,7 @@ package org.sj.punidos.crminer.tablemkr;
 import java.util.Vector;
 
 import org.sj.punidos.crminer.CommonInfo;
+import org.sj.punidos.crminer.sectorizer.GraphicString;
 
 public class Table implements CommonInfo {
 
@@ -35,7 +36,25 @@ public class Table implements CommonInfo {
 	
 	public Table(int cols, int rows) {
 		cells = new Cell[cols][rows];
+		init();
 	}
+	
+	public static Table emptyTable(int cols, int rows) {
+		Cell c[][] = new Cell[cols][rows];
+		return new Table(c);
+	}
+	
+	
+	
+	public void init() {
+		for(int r=0;r<getRows();r++) {
+			for(int c=0;c<getCols();c++) {
+				cells[c][r] = new Cell(1,1);
+			}
+		}
+	}
+	
+	
 	
 	
 	public Table(Table t) {
@@ -49,7 +68,7 @@ public class Table implements CommonInfo {
 		} else if(cells[col][row] instanceof HiddenCell) {
 			
 		} else {
-			//cells[col][row].add
+			cells[col][row].add(new GraphicString("a",null));
 
 		}
 	}

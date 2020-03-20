@@ -165,8 +165,13 @@ public  class RectArea extends Area
 	return new RectArea(getMaximumRect(lines));
     }
 
+    @Override
+	public boolean containsMost(Rectangle2D r) {
+		return ContentRegion.containsMost(bounds, r);
+	}
+    
 	@Override
-	public boolean contains(Rectangle r) {
+	public boolean contains(Rectangle2D r) {
 		//System.out.println("RectArea.contains");
 		//System.out.println("   this: "+ bounds);
 		//System.out.println("      r: "+ r);

@@ -47,7 +47,7 @@ public abstract class Area
     public abstract boolean contains(Point2D p);
 
     
-    public abstract boolean contains(Rectangle r);
+    public abstract boolean contains(Rectangle2D r);
 
     public abstract boolean outOrBound(TLine l);
 
@@ -88,11 +88,19 @@ public abstract class Area
 	return r;
     }
     
+	public abstract boolean containsMost(Rectangle2D r);
+
+    
     public void addContent(GraphicString gstr)
     {
     	if(this.contains(gstr.getBounds()))
     		content.add(gstr);
     }
+    
+    void pushContent(GraphicString gstr) {
+		content.add(gstr);
+    }
+    
 
     public Iterator<GraphicString> getContents()
     {

@@ -20,27 +20,27 @@
 
 package org.sj.punidos.crminer.sectorizer;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 //import org.apache.pdfbox.pdmodel.font.PDFont;
 
 public class GraphicString implements Positionable {
 
 	String text;
-	Rectangle bounds;
+	Rectangle2D bounds;
 	
 	public GraphicString(GraphicString gs) {
 		text = gs.text;
 		bounds = gs.bounds;
 	}
 	
-	public GraphicString(String t, Rectangle b) {
+	public GraphicString(String t, Rectangle2D b) {
 		text = t;
 		bounds = b;
 	}
 	
-	public Rectangle getBounds() {
+	public Rectangle2D getBounds() {
 		return bounds;
 	}
 	
@@ -48,10 +48,14 @@ public class GraphicString implements Positionable {
 		return text;
 	}
 
-	public Point getPosition() {
+	public Point2D getPosition() {
 		if(bounds == null) {
 			return null;
 		}
-		return bounds.getLocation();
+		return new Point2D.Double(bounds.getX(),bounds.getY());	
+	}
+	
+	public String toString() {
+		return String.format("(%s,%2f,%2f)", text, bounds.getX(), bounds.getY());
 	}
 }

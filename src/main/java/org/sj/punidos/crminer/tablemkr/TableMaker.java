@@ -26,11 +26,16 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.sj.punidos.crminer.sectorizer.ContentRegion;
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 import org.sj.punidos.crminer.tablemkr.graphtrace.SvgTrace;
 
+import java.util.logging.Logger;
+
 public abstract class TableMaker
 {
+	Logger log = Logger.getLogger("TableMaker");
+	
     float collisionThreshold = 2;
     
     Frame frame;
@@ -56,21 +61,21 @@ public abstract class TableMaker
     	int allMarks[] = new int[lines.size()];
     	for(TLine l: lines) {
     		if(l.isHoriz()) {
-    			System.out.println(l.toString() + " is horziontal.");
+    			log.fine(l.toString() + " is horziontal.");
     			allMarks[i++] = (int) l.getA().getY();
     			
     		} else {
-    			System.out.println(l.toString() + " is vertical.");
+    			log.fine(l.toString() + " is vertical.");
     			allMarks[j--] = (int) l.getA().getX();
     		}
     	}
     	//int x[] = new int[i];
     	//int y[] = new int[allMarks.length - i];
-    	System.out.println(String.format("lines.size=%d, i=%d, j=%d", lines.size(), i,j));
-    	System.out.println(String.format("marks.length=%d", allMarks.length));
+    	log.fine(String.format("lines.size=%d, i=%d, j=%d", lines.size(), i,j));
+    	log.fine(String.format("marks.length=%d", allMarks.length));
     	int x[] = Arrays.copyOfRange(allMarks, i, allMarks.length);
     	if(x.length != j) {
-    		System.err.println("Warning! x.length="+x.length);
+    		log.warning("x.length="+x.length+" expected:"+j);
     	}
     	int y[] = Arrays.copyOf(allMarks, i);
     	Arrays.sort(x);
@@ -116,6 +121,34 @@ public abstract class TableMaker
     	gstrings.add(gstr);
     }
     
+    boolean addStringToBestMatch(Vector<Area> areas, GraphicString gstr) {
+    	Area selected = null;
+    	double max = 0;
+		for(Area a: areas) {
+			double shared = ContentRegion.sharedArea(a.getBounds(), gstr.getBounds());  
+			if(shared > max) {
+				max = shared;
+				selected = a;
+			}
+		}
+		if(selected == null) {
+			return false;
+		}
+		selected.pushContent(gstr);
+		return true;
+    }
+
+    boolean addStringToFirstMatch(Vector<Area> areas, GraphicString gstr) {
+		for(Area a: areas) {
+			if(a.containsMost(gstr.getBounds())) {
+				a.pushContent(gstr);
+				return true;
+			}
+		}
+    	return false;
+    }
+
+    
     boolean addStringToOneArea(Vector<Area> areas, GraphicString gstr) {
 		for(Area a: areas) {
 			if(a.contains(gstr.getBounds())) {
@@ -123,6 +156,7 @@ public abstract class TableMaker
 				return true;
 			}
 		}
+    	//return addStringToBestMatch(areas,gstr);
     	return false;
     }
     
@@ -130,9 +164,18 @@ public abstract class TableMaker
     	int count = 0;
     	for(GraphicString gstr: this.gstrings)
     	{
-    		if(addStringToOneArea(areas, gstr)) count++;
+    		if(addStringToOneArea(areas, gstr)) {
+    			count++;
+    		} else {
+    			log.info("  Discarded: "+ gstr.getText());
+    			
+    			if(addStringToBestMatch(areas,gstr)) {
+    			//if(addStringToFirstMatch(areas,gstr)) {
+    				log.info("placed in 2nd round");
+    			}
+    		}
     	}
-    	System.out.println("added "+count+ " strings");
+    	log.info("added "+count+ " strings from "+gstrings.size());
     }
     
     /**
@@ -142,9 +185,9 @@ public abstract class TableMaker
      * @param areas
      */
     public void toSVG(Vector<Area> areas) {
-    	System.out.println("Exporting areas.");
+    	log.fine("Exporting areas.");
     	tracer.exportAreasAndGStrings(areas, gstrings);
-    	System.out.println("   GStrings: "+gstrings.size());
+    	log.fine("   GStrings: "+gstrings.size());
 	//	tracer.exportAreasAndText(areas,);
     }
 
@@ -152,17 +195,17 @@ public abstract class TableMaker
     public void addAreasToMatrix(Vector<Area> areas, Cell table[][])
     {
     	for(Area a: areas) {
-			System.out.println("Build location: " + a.toString());
+			log.fine("Build location: " + a.toString());
     		CellLocation clo = frame.areaToCellLoc(a, this.collisionThreshold);
     		if(clo == null)
     			throw new NullPointerException("Frame created a null CellLocation");
     		try {
-				System.out.println("Testing: c:" +clo.col+", r:"+clo.row);
+				log.fine("Testing: c:" +clo.col+", r:"+clo.row);
     			if(table[clo.col][clo.row] != null) {
     				System.err.println("Warning! repeated.");
     			} else {
-    				System.out.println("cell: "+clo.toString());
-    				System.out.println("   indices: c:"+clo.col+ ", r:"+clo.row);
+    				log.fine("cell: "+clo.toString());
+    				log.fine("   indices: c:"+clo.col+ ", r:"+clo.row);
     				table[clo.col][clo.row] = clo.cell;
 
     				/*fillSpan(loctable, clo, clo.col, clo.row,

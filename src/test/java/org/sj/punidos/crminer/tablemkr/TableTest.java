@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.Assert;
 
 public class TableTest {
 	
@@ -44,10 +45,44 @@ public class TableTest {
 	}
 	
 	@Test
-	public void testingSubTalbe() 
+	public void testingAdd() 
 	{
 		Table t = new Table(4,4);
+		t.add(1, 1, "a");
+		Assert.assertEquals("a", t.get(1, 1).fullText());
+	}
+	
+	@Test
+	public void testingSubTable() 
+	{
+		Table t = new Table(4,4);
+		t.add(1, 1, "a");
+		
+		Table u = t.subTable(1, 1, 2, 2);
+		Assert.assertEquals("cols", 2, u.getCols());
+		Assert.assertEquals("rowss", 2, u.getRows());
+		Assert.assertEquals("content 0,0", "a", u.getCell(0, 0).fullText());
+		
 		
 	}
+	
+	@Test
+	public void testingTableTrim() 
+	{
+		Table t = new Table(4,4);
+		t.add(1, 1, "a");
+		t.add(1, 2, "b");
+		t.add(2, 1, "c");
+		t.add(2, 2, "d");
+		
+		Table u = t.trim();
+		Assert.assertEquals("cols", 2, u.getCols());
+		Assert.assertEquals("rowss", 2, u.getRows());
+		Assert.assertEquals("content 0,0", "a", u.getCell(0, 0).fullText());
+		
+		
+		
+	}
+
 	
 }

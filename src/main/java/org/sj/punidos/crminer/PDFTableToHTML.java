@@ -155,22 +155,18 @@ public class PDFTableToHTML implements CommonInfo
 
         Option output = new Option("o", "output", true, "output file");
         output.setRequired(false);
-	output.setArgName("OUT-FILENAME-HTML");
         options.addOption(output);
 
-        Option clip = new Option("c", "clip", true, "clipping area coordinates");
-        clip.setRequired(false);
-	clip.setArgName("x,y,width,height");
+        Option clip = new Option("c", "clip", true, "format: x,y,width,height");
+        output.setRequired(false);
         options.addOption(clip);
 
         Option optThickness = new Option("t", "thickness", true, "máximum line thickness");
-        optThickness.setRequired(false);
-	optThickness.setArgName("max-tn");
+        output.setRequired(false);
         options.addOption(optThickness);
 
         Option optProximity = new Option("p", "proximity", true, "minimum distance between tables");
-        optProximity.setRequired(false);
-	optProximity.setArgName("min-prox");
+        output.setRequired(false);
         options.addOption(optProximity);
         
 
@@ -194,11 +190,7 @@ public class PDFTableToHTML implements CommonInfo
     		if(remaining.length > 0) {
     		    path = args[0];
     		} else {
-    		    System.out.println("No input filename given.");
-
-		    formatter.printHelp("PDFTableToHTML [OPTIONS] [PDF-filename-in]", options);
-		    
-		    System.exit(0);
+    		    System.out.println("No filename given. Using default path.");
     		}
     		
     		System.out.println("Reading: "+path);
@@ -222,7 +214,8 @@ public class PDFTableToHTML implements CommonInfo
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             
-            formatter.printHelp("PDFTableToHTML [OPTIONS] [PDF-filename-in]", options);
+            System.out.println("PDFTableToHTML [OPTIONS] [PDF-filename-in]");
+            formatter.printHelp("utility-name", options);
 
             System.exit(1);
         }

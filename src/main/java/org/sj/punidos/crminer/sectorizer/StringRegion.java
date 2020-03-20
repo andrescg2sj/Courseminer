@@ -51,7 +51,7 @@ public class StringRegion extends ContentRegion<GraphicString> {
 	
 	
 	
-	List<String> getStrings() 
+	public List<String> getStrings() 
 	{
 		//This would require Java 1.8
 		//return getGraphicStrings().stream().map(GraphicString::getText).collect(toList());
