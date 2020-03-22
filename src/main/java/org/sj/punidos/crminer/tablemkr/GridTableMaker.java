@@ -23,6 +23,8 @@ package org.sj.punidos.crminer.tablemkr;
 
 import java.util.Vector;
 
+import org.sj.punidos.crminer.sectorizer.ReverseYComparator;
+
 //TODO: decide a consistent order for column and row parameters
 public class GridTableMaker extends TableMaker {
 	
@@ -103,7 +105,8 @@ public class GridTableMaker extends TableMaker {
 	 */
 	Table makeFromGrid() {
     	//Cell table[][] = cellMatrix();
-		Table table = new Table(grid.numCols(), grid.numRows());
+		//Table table = new Table(grid.numCols(), grid.numRows());
+		Table table = Table.emptyTable(grid.numCols(), grid.numRows());
 		fillTable(table);
     	
     	
@@ -117,6 +120,7 @@ public class GridTableMaker extends TableMaker {
     	//FIXME: encapsulate? superclass method?
        	for(Area a: areas) {
 			System.out.println("Build location: " + a.toString());
+			a.sort(ReverseYComparator.getInstance());
     		CellLocation clo = frame.areaToCellLoc(a, this.collisionThreshold);
     		if(clo == null)
     			throw new NullPointerException("Frame created a null CellLocation");

@@ -34,9 +34,14 @@ import java.awt.geom.Line2D;
 //import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.sectorizer.HorizBandTransform;
+import org.sj.punidos.crminer.sectorizer.NormalComparator;
 import org.sj.punidos.crminer.sectorizer.PosRegionCluster;
 import org.sj.punidos.crminer.sectorizer.Positionable;
+import org.sj.punidos.crminer.sectorizer.ReverseYComparator;
+import org.sj.punidos.crminer.sectorizer.CompoundTransform;
 import org.sj.punidos.crminer.sectorizer.ContentRegion;
+import org.sj.punidos.crminer.sectorizer.ExpandTransform;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
 
 
@@ -153,8 +158,16 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     		}
     	}
     	log.finest("objects added: "+rc.countRemaining());
-
-    	rc.partitionContent(tableThreshold);
+    	
+    	CompoundTransform ct = new CompoundTransform();
+    	ct.add(new HorizBandTransform(rc.getBounds()));
+    	ct.add(new ExpandTransform(0,tableThreshold));
+    	//ExpandTransform t = new ExpandTransform(tableThreshold);
+    	//HorizBandTransform t = ;
+    	rc.partitionContent(ct, NormalComparator.getInstance());
+    	//rc.partitionContent(ht, NormalComparator.getInstance());
+    	
+    	//rc.partitionContent(tableThreshold);
     	
     	return rc;
     }
@@ -174,7 +187,15 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     	for(TableMaker tm: makers) {
     		Table t = tm.makeTable();
     		if(t != null) {
-    			tables.add(t);
+        		t = t.trim();
+        		if(t.countEmptyRows() > 0) {
+        			java.util.Vector<Table> parts = t.divideOnEmptyRow();
+        			for(Table p: parts) {
+        				tables.add(p);
+        			}
+        		} else {
+        			tables.add(t);
+        		}
     		}
     	}
     	log.finest("Tables created: "+tables.size());
@@ -219,9 +240,6 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     			} else if(obj instanceof GraphicString) {
     				GraphicString gs = (GraphicString) obj;
     				log.finest("      gs: "+gs.toString());
-    				if(gs.getText().contains("Actividades")) {
-    					log.info("Found - Actividades");
-    				}
     				tmaker.add(gs);
     			}
     		}

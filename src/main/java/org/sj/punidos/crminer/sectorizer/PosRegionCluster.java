@@ -296,7 +296,7 @@ public class PosRegionCluster<E extends Positionable>  {
 		int j = i+1;
 		while(j < regions.size()) {
 			ContentRegion<E> s = regions.get(j);
-			if(r.intersects(s)) {
+			if(r.intersects(s) || r.adjacent(s)) {
 				//System.out.println("  inters:"+j);
 				r.add(s);
 				regions.remove(j);
@@ -315,28 +315,65 @@ public class PosRegionCluster<E extends Positionable>  {
 		pushRegion(r);
 	}
 	
-	
+	@Deprecated
 	public void remainingToRegions(double threshold)
 	{
 		Vector<ContentRegion<E>> newRegions = new Vector<ContentRegion<E>>();
 		for(E obj: remaining) {
-			newRegions.add(new ContentRegion<E>(obj,threshold));
-			//this.pushRegion();
+			Rectangle2D r = ExpandTransform.expandRect(obj.getBounds(), threshold);
+			ContentRegion<E> cr = new ContentRegion<E>(r);
+			cr.add(obj);
+			newRegions.add(cr);
 		}
 		remaining.clear();
 		regions.addAll(newRegions);
 	}
 	
+	public void remainingToRegions(RectTransformation transf)
+	{
+		Vector<ContentRegion<E>> newRegions = new Vector<ContentRegion<E>>();
+		for(E obj: remaining) {
+			Rectangle2D r = transf.transform(obj.getBounds());
+			ContentRegion<E> cr = new ContentRegion<E>(r);
+			cr.add(obj);
+			if(cr.countElements() == 0) {
+				throw new IllegalStateException("0 elements");
+			}
+			newRegions.add(cr);
+			
+		}
+		remaining.clear();
+		regions.addAll(newRegions);
+	}
+
+	
 	public void partitionContent(double threshold)
 	{
 		partitionContent(threshold, false);
 	}
-
 	
+	
+	public void partitionContent(RectTransformation aggregator, Comparator<Positionable> comp)
+	{
+		remainingToRegions(aggregator);
+		sortRegions(comp);
+
+		System.out.println("Before melting: "+regions.size());
+
+		meltRegions();
+		System.out.println("After melting: "+regions.size());
+		
+	}
+	
+	
+
+	@Deprecated
 	public void partitionContent(double threshold, boolean reverse)
 	{
 		remainingToRegions(threshold);
 		sortRegions(reverse);
+		//sortRegions(ReverseYComparator.getInstance());
+		//sortRegions(NormalComparator.getInstance());
 		/*System.out.println("Sorted: ");
 		for(ContentRegion<E> cr: regions) {
 			System.out.println("  "+cr.getBounds());

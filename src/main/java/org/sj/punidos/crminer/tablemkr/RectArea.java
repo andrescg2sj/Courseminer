@@ -26,6 +26,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import org.sj.punidos.crminer.sectorizer.ContentRegion;
+import org.sj.punidos.crminer.sectorizer.ExpandTransform;
 
 
 public  class RectArea extends Area
@@ -87,7 +88,7 @@ public  class RectArea extends Area
     }
 
     public static Rectangle2D reduceRect(Rectangle2D r, double border) {
-    	return ContentRegion.expandRect(r,-border);
+    	return ExpandTransform.expandRect(r,-border);
     }
 
 
@@ -153,7 +154,7 @@ public  class RectArea extends Area
     {
 	return strictlyContains(l.getA()) && strictlyContains(l.getB());
     }
-
+    
 
 
     public Rectangle2D getBounds() {

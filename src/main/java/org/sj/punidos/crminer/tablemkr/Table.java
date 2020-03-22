@@ -119,6 +119,60 @@ public class Table implements CommonInfo {
 		return subTable(col, row, numCols, numRows);
 	}
 	
+	public int countEmptyRows() {
+		int count = 0;
+		for(int r=0; r<getRows();r++) {
+			if(isEmptyRow(r)) count++;
+		}
+		return count;
+	}
+	
+	
+	public Vector<Table> divideOnEmptyRow() {
+		Vector<Table> tables = new Vector<Table>(); 
+		int firstRow = -1;
+		for(int r=0;r<getRows();r++) {
+			if(isEmptyRow(r)) {
+				if(firstRow >= 0) {
+					Table t = this.subTable(0, firstRow, getCols(), r-firstRow);
+					tables.add(t);
+					firstRow = -1;
+				}
+			} else {
+				if(firstRow < 0) {
+					firstRow = r;
+				}
+			}
+		}
+		if(firstRow >= 0) {
+			Table t = this.subTable(0, firstRow, getCols(), getRows()-firstRow);
+			tables.add(t);
+		}
+		return tables;
+	}
+	
+	/**
+	 * 
+	 */
+	public Table simplifyTable() {
+		/*
+		 * for(row = ...) {
+		 * 	if all rows.rowSpan > 1 => collapse rows.
+		 * }
+		 */
+		
+		throw new UnsupportedOperationException("simplifyTable");
+	}
+	
+	public int countEmptyCols() {
+		int count = 0;
+		for(int c=0; c<getCols();c++) {
+			if(isEmptyCol(c)) count++;
+		}
+		return count;
+	}
+
+	
 	public boolean isEmptyRow(int row) {
 		for(int c=0;c<getCols();c++) {
 			if(!cells[c][row].isEmpty()) return false;

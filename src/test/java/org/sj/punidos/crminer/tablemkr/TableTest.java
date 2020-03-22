@@ -23,6 +23,7 @@ package org.sj.punidos.crminer.tablemkr;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Vector;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -62,7 +63,22 @@ public class TableTest {
 		Assert.assertEquals("cols", 2, u.getCols());
 		Assert.assertEquals("rowss", 2, u.getRows());
 		Assert.assertEquals("content 0,0", "a", u.getCell(0, 0).fullText());
+	}
+	
+	@Test
+	public void testingDivide() {
+		Table t = new Table(2,3);
+		t.add(0, 0, "a");
+		t.add(1, 0, "b");
+		t.add(0, 2, "c");
+		t.add(1, 2, "d");
 		
+		Vector<Table> tables = t.divideOnEmptyRow();
+		Assert.assertEquals("number of tables", 2,tables.size());
+		Assert.assertEquals("A. getCols", 2,tables.get(0).getCols());
+		Assert.assertEquals("A. getRows", 1,tables.get(0).getRows());
+		Assert.assertEquals("B. getCols", 2,tables.get(1).getCols());
+		Assert.assertEquals("B. getRows", 1,tables.get(1).getRows());
 		
 	}
 	

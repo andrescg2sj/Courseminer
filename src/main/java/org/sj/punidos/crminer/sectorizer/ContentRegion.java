@@ -41,7 +41,7 @@ public class ContentRegion<E extends Positionable> implements Positionable {
 	}
 	
 	public ContentRegion(E obj, double border) {
-		region = expandRect(obj.getBounds(), border);
+		region = ExpandTransform.expandRect(obj.getBounds(), border);
 		contents = new Vector<E>();
 		contents.add(obj);
 	}
@@ -105,6 +105,19 @@ public class ContentRegion<E extends Positionable> implements Positionable {
 		return region.intersects(cr.region);
 	}
 	
+	public boolean adjacent(ContentRegion<E> cr) {
+		return adjacent(region, cr.region);
+	}
+	
+	public static boolean adjacent(Rectangle2D a, Rectangle2D b) {
+		if(Math.min(a.getMaxX(), b.getMaxX()) >  Math.max(a.getMinX(), b.getMinX())) {
+			return Math.min(a.getMaxY(), b.getMaxY()) >=  Math.max(a.getMinY(), b.getMinY());
+		} else if(Math.min(a.getMaxX(), b.getMaxX()) >  Math.max(a.getMinX(), b.getMinX())) {
+			return Math.min(a.getMaxX(), b.getMaxX()) >=  Math.max(a.getMinX(), b.getMinX());
+		}
+		return false;
+	}
+	
 	public E get(int i) {
 		return contents.get(i);
 	}
@@ -128,12 +141,6 @@ public class ContentRegion<E extends Positionable> implements Positionable {
 	
 	//public static String getText(GraphicsString )
 	
-
-	public static Rectangle2D expandRect(Rectangle2D rect, double border) {
-		return new Rectangle2D.Double(rect.getX() - border, rect.getY() - border,
-				rect.getWidth() + border*2,
-				rect.getHeight() + border*2);
-	}
 	
 	public void mutiply(double factor) {
 		region = MultiplyTransform.multiplyRect(region, factor);

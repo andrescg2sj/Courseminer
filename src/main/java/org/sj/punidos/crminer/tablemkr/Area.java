@@ -24,9 +24,12 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Vector;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.sectorizer.NormalComparator;
+import org.sj.punidos.crminer.sectorizer.Positionable;
 
 /* 
  * TODO: Substitute by sectorizer.contentRegion?
@@ -89,6 +92,15 @@ public abstract class Area
     }
     
 	public abstract boolean containsMost(Rectangle2D r);
+	
+	public void sort()
+	{
+		sort(NormalComparator.getInstance());
+	}
+
+	public void sort(Comparator<Positionable> c) {
+		content.sort(c);
+	}
 
     
     public void addContent(GraphicString gstr)

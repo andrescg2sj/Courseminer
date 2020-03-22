@@ -26,7 +26,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 import java.awt.geom.Line2D;
 
-import org.sj.punidos.crminer.sectorizer.ContentRegion;
+import org.sj.punidos.crminer.sectorizer.ExpandTransform;
 import org.sj.punidos.crminer.sectorizer.Positionable;
 
 public class TLine implements Positionable
@@ -152,7 +152,7 @@ public class TLine implements Positionable
 		double height = Math.max(l.getA().getY(), l.getB().getY()) - y;
 		Rectangle2D r = new Rectangle2D.Double(x,y,width,height);
 		
-		return ContentRegion.expandRect(r, thickness);
+		return ExpandTransform.expandRect(r, thickness);
 	}
 
 
