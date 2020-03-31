@@ -95,9 +95,43 @@ public class TableTest {
 		Assert.assertEquals("cols", 2, u.getCols());
 		Assert.assertEquals("rowss", 2, u.getRows());
 		Assert.assertEquals("content 0,0", "a", u.getCell(0, 0).fullText());
+	}
+	
+	@Test
+	public void testingMinColSpan() 
+	{
+		Table t = new Table(3,2);
+		t.add(0,0,"a");
+		t.add(0,1,"b");
+		t.add(2,0,"c");
+		t.add(2,1,"d");
 		
+		t.spanCell(0, 0, 2, 1);
+		t.spanCell(0, 1, 2, 1);
 		
+		Assert.assertEquals("min col span:",2, t.getMinColSpan(0));
+	}
+
+	@Test
+	public void testingSimplifyTable() 
+	{
+		Table t = new Table(3,2);
+		t.add(0,0,"a");
+		t.add(0,1,"b");
+		t.add(2,0,"c");
+		t.add(2,1,"d");
 		
+		t.spanCell(0, 0, 2, 1);
+		t.spanCell(0, 1, 2, 1);
+		
+		t.simplifyTable();
+		
+		Assert.assertEquals("table columns:",2, t.getCols());
+		Assert.assertEquals("table rows:",2, t.getRows());
+		Assert.assertEquals("table content 0,0:","a", t.get(0, 0).fullText());
+		Assert.assertEquals("table 0,0 colSpan:",1, t.get(0, 0).colSpan);
+		Assert.assertEquals("table content 1,1:","c", t.get(1, 0).fullText());
+		Assert.assertEquals("table content 1,1:","d", t.get(1, 1).fullText());
 	}
 
 	

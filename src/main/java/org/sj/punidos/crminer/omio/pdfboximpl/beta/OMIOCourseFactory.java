@@ -39,9 +39,9 @@ public class OMIOCourseFactory {
 	Pattern timep;
 			
 
-	public OMIOCourseFactory() {
+	public OMIOCourseFactory()
+	{
 		timep = Pattern.compile(TIME_PATTERN_REGEX);
-		
 	}
 	
 	public boolean isHourData(String s) {

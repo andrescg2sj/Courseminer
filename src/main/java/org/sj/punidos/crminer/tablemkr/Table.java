@@ -64,11 +64,15 @@ public class Table implements CommonInfo {
 	
 	public void add(int col, int row, String str) {
 		if(cells[col][row] == null) {
+			Cell c = new Cell(1,1);
+			//TODO: remove GraphicStrings ...
+			c.add(new GraphicString(str, null));
+			cells[col][row] = c;
 			
 		} else if(cells[col][row] instanceof HiddenCell) {
-			
+			//TODO
 		} else {
-			cells[col][row].add(new GraphicString("a",null));
+			cells[col][row].add(new GraphicString(str,null));
 
 		}
 	}
@@ -88,6 +92,16 @@ public class Table implements CommonInfo {
 				//FIXME
 				Cell model = cells[c+col][r+row];
 				
+				
+				if(model instanceof HiddenCell) {
+					
+					HiddenCell hc = (HiddenCell) model;
+					if(hc.hiddenBy.col < col || hc.hiddenBy.col < row) {
+						hc.hiddenBy.col = Math.max(0, hc.hiddenBy.col-col);
+						hc.hiddenBy.row = Math.max(0, hc.hiddenBy.row-row);
+						hc.hiddenBy.cell = newCells[hc.hiddenBy.col][hc.hiddenBy.row]; 
+					}
+				} 
 				if((r + model.rowSpan >= getRows()) ||
 						(c + model.colSpan >= getCols())) {
 					int newCols = Math.min(model.colSpan, numCols - c);
@@ -151,17 +165,165 @@ public class Table implements CommonInfo {
 		return tables;
 	}
 	
+	int getMinColSpan(int col) {
+		int min = getCols();
+		for(int row =0; row < getRows(); row++) {
+			Cell c = cells[col][row];
+			if(c != null) {
+				if(c instanceof HiddenCell) {
+					HiddenCell hc = (HiddenCell) c;
+					min =  Math.min(hc.hiddenBy.cell.colSpan + hc.hiddenBy.col - col, min);
+				} else if(c.colSpan < min) {
+					min = c.colSpan;
+				}
+			}
+
+		}
+		return min;
+	}
+	
+	int getMinRowSpan(int row) {
+		int min = getRows();
+		for(int col =0; col < getCols(); col++) {
+			Cell c = cells[col][row];
+			if(c != null) {
+				if(c instanceof HiddenCell) {
+					HiddenCell hc = (HiddenCell) c;
+					min =  Math.min(hc.hiddenBy.cell.rowSpan + hc.hiddenBy.row - row, min);
+				} else if(c.rowSpan < min) {
+					min = c.rowSpan;
+				}
+			}
+
+		}
+		return min;
+	}
+
+	public void spanCell(int col, int row, int colSpan, int rowSpan) {
+		Cell c = cells[col][row];
+		c.colSpan = colSpan;
+		c.rowSpan = rowSpan;
+		fillCells(c, col, row);
+	}
+	
+	/**
+	 * 
+	 * @param col
+	 * @return number of deleted columns.
+	 */
+	private int simplifyCol(int col) {
+		int minColSpan = getMinColSpan(col);
+
+		if(minColSpan > 1) {
+			int decrement = minColSpan - 1;
+			for(int row =0; row < getRows(); row++) {
+				Cell c = cells[col][row];
+				if(c != null && !(c instanceof HiddenCell)) {
+					c.colSpan -= decrement;
+				}
+			}
+			return decrement;
+		} else {
+			return 0;
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param col
+	 * @return number of deleted columns.
+	 */
+	private int simplifyRow(int row) {
+		int minRowSpan = getMinRowSpan(row);
+
+		if(minRowSpan > 1) {
+			int decrement = minRowSpan - 1;
+			for(int col =0; col < getCols(); col++) {
+				Cell c = cells[col][row];
+				if(c != null && !(c instanceof HiddenCell)) {
+					c.rowSpan -= decrement;
+				}
+			}
+			return decrement;
+		} else {
+			return 0;
+		}
+	}
+
+	
+	void moveDataBack(int col, int row, int backCols, int backRows) {
+		if(backCols == 0 && backRows == 0)
+			return;
+		//System.out.println("  move:"+col+","+row);
+
+		int numRows = getRows();
+		int numCols = getCols();
+		for(int c = col; c < numCols; c++) {
+			for(int r = row; r < numRows; r++) {
+				cells[c-backCols][r-backRows]  = cells[c][r];
+				if(cells[c][r] instanceof HiddenCell) {
+					HiddenCell hc = (HiddenCell) cells[c][r];
+					if(hc.hiddenBy.col >= col && hc.hiddenBy.row >= row) {
+						hc.hiddenBy.col -= backCols;
+						hc.hiddenBy.row -= backRows;
+						hc.hiddenBy.cell = cells[hc.hiddenBy.col][hc.hiddenBy.row];
+					} else if (hc.hiddenBy.col> (col-backCols) && hc.hiddenBy.row > (row-backRows)) {
+						hc.hiddenBy = null;
+					}
+ 				}
+			}
+		}
+		for(int c = numCols-backCols; c < numCols; c++) {
+			for(int r=row; r < numRows; r++) {
+				cells[c][r] = null;
+			}
+		}
+		for(int r = numRows-backRows; r < numRows; r++) {
+			for(int c=col; c < numCols; c++) {
+				cells[c][r] = null;
+			}
+		}
+		
+	}
+	
+
+	
+	
 	/**
 	 * 
 	 */
-	public Table simplifyTable() {
-		/*
-		 * for(row = ...) {
-		 * 	if all rows.rowSpan > 1 => collapse rows.
-		 * }
-		 */
-		
-		throw new UnsupportedOperationException("simplifyTable");
+	public void simplifyTable() {
+		int col = 0;
+		//System.out.println("Simplify cols");
+		int deletedCols = 0;
+		int numCols = getCols();
+		while(col < (numCols-deletedCols)) {
+			int cols = simplifyCol(col);
+			//System.out.println("  delete cols:"+cols);
+			deletedCols+=cols;
+			//System.out.println("  sum="+deletedCols);
+			moveDataBack(col+cols+1,0, cols,0);
+			col++;
+		}
+		//System.out.println("  deleted cols="+deletedCols);
+		int row = 0;
+		int numRows = getRows();
+		int deletedRows = 0;
+		//System.out.println("Simplify rows");
+		while(row < (numRows-deletedRows)) {
+			int rows = simplifyRow(row);
+			//System.out.println("  delete rows:"+rows);
+			deletedRows += rows;
+			//System.out.println("  sum="+deletedRows);
+
+			moveDataBack(0,row+rows+1, 0, rows);
+			row++;
+		}
+
+		if(deletedCols > 0 || deletedRows > 0) {
+			cells = subTable(0,0,numCols-deletedCols, numRows-deletedRows).cells;
+		}
 	}
 	
 	public int countEmptyCols() {
@@ -178,6 +340,16 @@ public class Table implements CommonInfo {
 			if(!cells[c][row].isEmpty()) return false;
 		}
 		return true;
+	}
+	
+	public String row_log(int row) {
+		StringBuilder sb = new StringBuilder();
+		for(int c=0;c<getCols();c++) {
+		
+			//if(!cells[c][row].isEmpty()) return false;
+			sb.append(String.format(" %d", cells[c][row].contents.size()));
+		}
+		return sb.toString();
 	}
 
 	public boolean isEmptyCol(int col) {
@@ -201,7 +373,7 @@ public class Table implements CommonInfo {
 			}
 		}
 	}
-
+	
 	
 	/*Cell[][] copy(Cell data[][]) {
 		//Cell newData[][] = new

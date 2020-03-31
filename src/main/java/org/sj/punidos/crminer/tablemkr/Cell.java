@@ -64,7 +64,7 @@ public class Cell {
     }
     
     public boolean isEmpty() {
-    	return contents.size() == 0;
+    	return contents.size() == 0 || fullText().trim().equals("");
     }
     
     public int numStrings() {

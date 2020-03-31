@@ -191,6 +191,8 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
         		if(t.countEmptyRows() > 0) {
         			java.util.Vector<Table> parts = t.divideOnEmptyRow();
         			for(Table p: parts) {
+        				//TODO
+        				p.simplifyTable();
         				tables.add(p);
         			}
         		} else {
