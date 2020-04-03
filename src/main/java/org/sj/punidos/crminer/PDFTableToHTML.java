@@ -145,6 +145,10 @@ public class PDFTableToHTML implements CommonInfo
     	}
 
     }
+    
+    public void setDestination(String path) {
+    	dstFilename = path;
+    }
 
 
     public static void main(String args[]) {
