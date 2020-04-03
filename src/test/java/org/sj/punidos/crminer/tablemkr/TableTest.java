@@ -25,6 +25,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Vector;
 import org.junit.Test;
+import org.sj.punidos.crminer.tablemkr.Cell;
+import org.sj.punidos.crminer.tablemkr.HiddenCell;
+import org.sj.punidos.crminer.tablemkr.Table;
 import org.junit.Assert;
 
 public class TableTest {

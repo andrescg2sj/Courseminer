@@ -25,6 +25,9 @@ package org.sj.punidos.crminer.tablemkr;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.sj.punidos.crminer.tablemkr.Grid;
+import org.sj.punidos.crminer.tablemkr.GridTableMaker;
+import org.sj.punidos.crminer.tablemkr.Table;
 
 public class GridTableMakerTest {
 

@@ -24,7 +24,8 @@ package org.sj.punidos.crminer.tablemkr;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-//import org.sj.punidos.crminer.tablemkr.GridTableMaker.CellLimits;
+import org.sj.punidos.crminer.tablemkr.Cell;
+import org.sj.punidos.crminer.tablemkr.Grid;
 
 
 public class GridTest {

@@ -74,12 +74,12 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.sectorizer.StringRegion;
-import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
 import org.sj.punidos.crminer.tablemkr.GridTableMaker;
-import org.sj.punidos.crminer.tablemkr.TLine;
 import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
+import org.sj.punidos.crminer.tablemkr.TLine;
 import org.sj.punidos.crminer.tablemkr.Table;
 import org.sj.punidos.crminer.tablemkr.TableMaker;
+import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
 
 import java.util.logging.Logger;
 
@@ -118,7 +118,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine implemen
     GrPath path = new GrPath();
     
     public static final double DEFAULT_THICKNESS = 2;
-    public static final double DEFAULT_PROXIMITY = 0.5;
+    public static final double DEFAULT_PROXIMITY = 0.3;
     
     /**
      * maximum thickness of a rectangle in order to be considered as a line.

@@ -102,9 +102,7 @@ public  class RectArea extends Area
 	    return null;
 
 	Area parts[] = new Area[2];
-	System.out.println("Before split:" + bounds);
 	if(l.isHoriz()) {
-	    System.out.println("Horizontal split");
 	    //if(l.getA().getY() < bounds.get
 	    double height1 = l.getA().getY() - bounds.getY();
 	    double height2 = bounds.getHeight() - height1;
@@ -115,7 +113,6 @@ public  class RectArea extends Area
 				    bounds.getWidth(), height2);
 	    
 	} else {
-	    System.out.println("Vertical split");
 	    double width1 = l.getA().getX() - bounds.getX();
 	    double width2 = bounds.getWidth() - width1;
 	       

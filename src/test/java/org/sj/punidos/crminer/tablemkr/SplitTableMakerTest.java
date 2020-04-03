@@ -8,10 +8,10 @@ import java.util.Vector;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
 import org.sj.punidos.crminer.tablemkr.Area;
-import org.sj.punidos.crminer.tablemkr.TLine;
 import org.sj.punidos.crminer.tablemkr.RectArea;
-import org.sj.punidos.crminer.tablemkr.Table;
 import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
+import org.sj.punidos.crminer.tablemkr.TLine;
+import org.sj.punidos.crminer.tablemkr.Table;
 import org.junit.Test;
 
 public class SplitTableMakerTest {

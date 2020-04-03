@@ -28,10 +28,12 @@ import java.util.Iterator;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
-import org.sj.punidos.crminer.tablemkr.Area;
+
 import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.Utils;
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.tablemkr.Area;
+
 import java.util.Locale;
 
 

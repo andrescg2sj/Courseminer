@@ -90,10 +90,6 @@ public class SplitTableMaker extends TableMaker {
     	
     	int cols = frame.x.length - 1;
     	int rows = frame.y.length - 1;
-    	System.out.println(String.format("cols=%d rows=%d",cols, rows));
-    	
-
-    	System.out.println("Adding Strings...");
     	addStringsToAreas(areas);
     	
     	Cell table[][] = new Cell[cols][rows];
@@ -119,16 +115,7 @@ public class SplitTableMaker extends TableMaker {
     public Vector<Area> buildAreas(TLine lineArray[]) {
     	//TODO: manage bad tables
     	Area fullArea = new RectArea(Area.getMaximumRect(lineArray));
-    	System.out.println("FullArea:");
-    	System.out.println(fullArea);
-
-    	//TODO: remove. Not necessary.
-    	//lineArray = removeBounds(fullArea, lineArray);
-    	//System.out.println("Without boundaries:");
-    	logLines(lineArray);
-
     	Vector<Area> areas = new Vector<Area>();
-    	
     	
 
     	areas.add(fullArea);
@@ -158,7 +145,6 @@ public class SplitTableMaker extends TableMaker {
     	}
 
     	
-    	System.out.println("returning areas: "+ areas.size());
     	return areas;
     }
 
@@ -166,13 +152,6 @@ public class SplitTableMaker extends TableMaker {
     public Vector<Area> buildAreas_old(TLine lineArray[]) {
     	//TODO: manage bad tables
     	Area fullArea = new RectArea(Area.getMaximumRect(lineArray));
-    	System.out.println("FullArea:");
-    	System.out.println(fullArea);
-
-    	//TODO: remove. Not necessary.
-    	//lineArray = removeBounds(fullArea, lineArray);
-    	//System.out.println("Without boundaries:");
-    	logLines(lineArray);
 
     	Vector<Area> areas = new Vector<Area>();
 
@@ -203,7 +182,6 @@ public class SplitTableMaker extends TableMaker {
     	    }
     	    //areas.addAll(newAreas);
     	}
-    	System.out.println("returning areas: "+ areas.size());
     	return areas;
     }
     
