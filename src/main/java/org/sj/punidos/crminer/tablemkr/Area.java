@@ -1,14 +1,40 @@
+/*
+ * Apache License
+ *
+ * Copyright (c) 2019 andrescg2sj
+ *
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+
 package org.sj.punidos.crminer.tablemkr;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Vector;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.sectorizer.NormalComparator;
+import org.sj.punidos.crminer.sectorizer.Positionable;
 
-
+/* 
+ * TODO: Substitute by sectorizer.contentRegion?
+ * - Only feasible for RecWtArea.
+ */
 public abstract class Area
 {
     //Line top, left, right, bottom;
@@ -19,18 +45,18 @@ public abstract class Area
 	}
 
 
-    public abstract Area[] split(Line l);
+    public abstract Area[] split(TLine l);
 
     public abstract boolean contains(Point2D p);
 
     
-    public abstract boolean contains(Rectangle r);
+    public abstract boolean contains(Rectangle2D r);
 
-    public abstract boolean outOrBound(Line l);
+    public abstract boolean outOrBound(TLine l);
 
 
     
-    public abstract boolean strictlyContains(Line l);
+    public abstract boolean strictlyContains(TLine l);
 
     public  abstract Rectangle2D getBounds();
 
@@ -39,16 +65,16 @@ public abstract class Area
      * collisionThreshold is used in order not to detect a collision
      * with a line very close to the border.
      */
-    public abstract boolean collision(Line l);
+    public abstract boolean collision(TLine l);
 
     /**
      * @param tolerance width of a border of this Area in which 
      * collsion is not detected.
      */
-    public abstract boolean collision(Line l, double tolerance);
+    public abstract boolean collision(TLine l, double tolerance);
 
     
-    public static Rectangle2D getMaximumRect(Line lines[]) {
+    public static Rectangle2D getMaximumRect(TLine lines[]) {
 	Point2D start = lines[0].getA();
 	Rectangle2D r = new Rectangle2D.Double(start.getX(), start.getY(),
 					       0,0);
@@ -65,11 +91,28 @@ public abstract class Area
 	return r;
     }
     
+	public abstract boolean containsMost(Rectangle2D r);
+	
+	public void sort()
+	{
+		sort(NormalComparator.getInstance());
+	}
+
+	public void sort(Comparator<Positionable> c) {
+		content.sort(c);
+	}
+
+    
     public void addContent(GraphicString gstr)
     {
     	if(this.contains(gstr.getBounds()))
     		content.add(gstr);
     }
+    
+    void pushContent(GraphicString gstr) {
+		content.add(gstr);
+    }
+    
 
     public Iterator<GraphicString> getContents()
     {

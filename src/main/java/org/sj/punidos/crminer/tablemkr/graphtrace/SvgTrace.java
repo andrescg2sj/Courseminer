@@ -1,38 +1,68 @@
+/*
+ * Apache License
+ *
+ * Copyright (c) 2019 andrescg2sj
+ *
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+
 package org.sj.punidos.crminer.tablemkr.graphtrace;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.Point;
-import java.util.Date;
 import java.util.Vector;
 import java.util.Iterator;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
-import org.sj.punidos.crminer.tablemkr.Area;
+
+import org.sj.punidos.crminer.CommonInfo;
+import org.sj.punidos.crminer.Utils;
 import org.sj.punidos.crminer.sectorizer.GraphicString;
+import org.sj.punidos.crminer.tablemkr.Area;
+
 import java.util.Locale;
 
 
 
-public class SvgTrace {
+public class SvgTrace implements CommonInfo {
 
     //String path;
     //FileWriter fwriter;
     float drawAreaFactor = 1.1f;
-    public static final String NEW_LINE = "\n";
 
     public SvgTrace() {
 	//this.path = path;
 
     }
+    
 
     public String generateLogFilename() {
-	DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
-	Date date = new Date();
-	String timestamp = dateFormat.format(date); 
-	return "out/log" + timestamp +".svg";
+    	String timestamp = Utils.getTimestamp();
+    	int number = 0;
+    	
+    	String path = DST_PATH + "log" + timestamp +"-" + number+".svg";
+    	File f = new File(path);
+    	while(f.exists()) {
+    		number++;
+        	path = DST_PATH + "log" + timestamp +"-" + number+".svg";
+        	f = new File(path);
+    	}
+    	
+    	return path;
     }
 
     public void exportAreasAndGStrings(Vector<Area> areas,
@@ -55,7 +85,7 @@ public class SvgTrace {
     	for(Area a: areas) {
 	    content += areaToSvg(a, bounds);
     	}
-	String s = String.format("<svg width=\"%.2f\" height=\"%.2f\">",
+	String s = String.format(Locale.ROOT, "<svg width=\"%.2f\" height=\"%.2f\" xmlns=\"http://www.w3.org/2000/svg\">"+NEW_LINE,
 				 (float) bounds.getMaxX()*drawAreaFactor,
 				 (float) bounds.getMaxY()*drawAreaFactor);
 
@@ -63,7 +93,7 @@ public class SvgTrace {
 	    System.out.println("Trace: gstrings: " + gstrs.size());
 	    for(GraphicString gs: gstrs) {
 		content += gstrToSvg(gs);
-		System.out.println("  gstr: " + gs.getText());
+		//System.out.println("  gstr: " + gs.getText());
 	    }
 	}
 
@@ -73,7 +103,8 @@ public class SvgTrace {
 	    fwriter.write(s);
 	    fwriter.close();
 	} catch(IOException ioe) {
-	    ioe.printStackTrace();
+	    //ioe.printStackTrace();
+		System.err.println("Error trying to write graphic log: " + ioe.getMessage());
 	}
     }
 
@@ -83,18 +114,28 @@ public class SvgTrace {
 
     
     public String gstrToSvg(GraphicString gstr) {
-	Point p = gstr.getPosition();
-	return  String.format(Locale.ROOT, "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\">%s</text>",
-			      p.getX(), p.getY(), gstr.getText());
+	Point2D p = gstr.getPosition();
+	String svgBounds = svgRectangle(gstr.getBounds(),"red"); 
+	String svgText = String.format(Locale.ROOT, "<text x=\"%.2f\" y=\"%.2f\" fill=\"red\">%s</text>",
+		      p.getX(), p.getY(), gstr.getText()); 
+	return  svgBounds+ NEW_LINE+ svgText + NEW_LINE;
  
+    }
+
+    public String svgRectangle(Rectangle2D rect) {
+    	return svgRectangle(rect, "green");
+    }
+    
+    public String svgRectangle(Rectangle2D rect, String color) {
+    	return String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"%s\" stroke-width=\"3\" />"+NEW_LINE, 
+    			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), color);
     }
 
     public String areaToSvg(Area area, Rectangle2D bounds) {
 	
 	Rectangle2D rect = area.getBounds();
 	bounds.add(rect);
-	String xml = String.format(Locale.ROOT, "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" stroke=\"green\" stroke-width=\"3\" />"+NEW_LINE, 
-    			rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	String xml = svgRectangle(rect);
 	Iterator<GraphicString> cnt = area.getContents();
 	while(cnt.hasNext()) {
 	    GraphicString gstr = cnt.next();

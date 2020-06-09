@@ -5,11 +5,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.geom.Rectangle2D;
 
+import org.junit.Test;
 import org.sj.punidos.crminer.tablemkr.Area;
 import org.sj.punidos.crminer.tablemkr.CellLocation;
 import org.sj.punidos.crminer.tablemkr.Frame;
 import org.sj.punidos.crminer.tablemkr.RectArea;
-import org.junit.Test;
 
 
 public class FrameTest {

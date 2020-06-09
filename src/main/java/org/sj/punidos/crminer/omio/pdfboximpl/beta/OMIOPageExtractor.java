@@ -1,3 +1,23 @@
+/*
+ * Apache License
+ *
+ * Copyright (c) 2019 andrescg2sj
+ *
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+
 package org.sj.punidos.crminer.omio.pdfboximpl.beta;
 
 import java.awt.Point;
@@ -39,6 +59,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
@@ -46,18 +67,16 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
-import org.sj.punidos.crminer.sectorizer.ContentRegion;
+import org.sj.punidos.crminer.sectorizer.StringRegion;
 import org.sj.punidos.crminer.sectorizer.GStringBuffer;
-import org.sj.punidos.crminer.sectorizer.RegionCluster;
+import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
 /**
- * Example of a custom PDFGraphicsStreamEngine subclass. Allows text and graphics to be processed
- * in a custom manner. This example simply prints the operations to stdout.
  *
- * <p>See {@link PDFStreamEngine} for further methods which may be overridden.
  * 
  * @author John Hewson
+ * @author Andres Gonzalez
  */
-public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
+public class OMIOPageExtractor extends PDFGraphicsStreamEngine
 {
 	
 	/*
@@ -71,10 +90,13 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 	 * https://apache.googlesource.com/pdfbox/+/a3241d612d3ae387525d58d64b93b7804dde5939/pdfbox/src/main/java/org/apache/pdfbox/contentstream/PDFGraphicsStreamEngine.java
 	 */
 	
+	File input;
+	
 	GStringBuffer region;
-	RegionCluster cluster;
+	StrRegionCluster cluster;
 	
-	
+
+	/*
     public static void main(String[] args) throws IOException
     {
         File file = new File("res/OMIO-CARAB-2.pdf");
@@ -87,6 +109,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         //System.out.println(engine.cluster.toHTML());
         engine.writeHTML("out/doc1.htm");
     }
+    */
     
     protected void writeHTML(String filename) throws IOException {
     	File f = new File(filename);
@@ -97,16 +120,30 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     	
     }
     
+    
+    //TODO: Is this a good design?
+    public static void firstPageToHTML(File f, String fnameout) throws InvalidPasswordException, IOException {
+        PDDocument doc = PDDocument.load(f);
+        PDPage page = doc.getPage(0);
+        OMIOPageExtractor engine = new OMIOPageExtractor(page);
+        engine.run();
+        doc.close();
+        engine.writeHTML(fnameout);
+        //return engine;
+    	
+    }
+    
+    
     /**
      * Constructor.
      *
      * @param page PDF Page
      */
-    protected CustomGraphicsStreamEngine(PDPage page)
+    protected OMIOPageExtractor(PDPage page)
     {
         super(page);
         region = new GStringBuffer();
-        cluster = new RegionCluster();
+        cluster = new StrRegionCluster();
     }
     
     /**
@@ -129,7 +166,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
                 p0.getX(), p0.getY(), p1.getX(), p1.getY(),
                 p2.getX(), p2.getY(), p3.getX(), p3.getY());
-        Rectangle r = ContentRegion.rectangleFromPoints(p0,p1,p2,p3);
+        Rectangle2D r = StringRegion.rectangleFromPoints(p0,p1,p2,p3);
         cluster.pushRegion(r);
     }
     @Override
@@ -220,6 +257,8 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         super.showTextString(string);
         System.out.println("\"");
         
+        //FIXME
+        //cluster.push(new PDFString(region.getText(),r , null));
     }
     /**
      * Overridden from PDFStreamEngine.
@@ -232,6 +271,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         region.reset();
         super.showTextStrings(array);
         Rectangle r = region.getRegion();
+        //System.out.println("  "+r.toString());
         cluster.push(new PDFString(region.getText(),r , null));
         System.out.println("\"");
         System.out.println(r.toString());

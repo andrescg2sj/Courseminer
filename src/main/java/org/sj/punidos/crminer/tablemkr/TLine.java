@@ -1,10 +1,35 @@
+/*
+ * Apache License
+ *
+ * Copyright (c) 2019 andrescg2sj
+ *
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+
 
 package org.sj.punidos.crminer.tablemkr;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Locale;
 import java.awt.geom.Line2D;
 
-public class Line
+import org.sj.punidos.crminer.sectorizer.ExpandTransform;
+import org.sj.punidos.crminer.sectorizer.Positionable;
+
+public class TLine implements Positionable
 {
     Point2D a, b;
 
@@ -55,7 +80,7 @@ public class Line
 	return new Line2D.Double(a, b);
     }
 
-    public Line(double x1, double y1, double x2, double y2)
+    public TLine(double x1, double y1, double x2, double y2)
     {
 	Point2D points[] = sorted(new Point2D.Double(x1,y1),
 				  new Point2D.Double(x2,y2));
@@ -63,7 +88,7 @@ public class Line
 	this.b = points[1];
     }
     
-    public Line(Point2D _a, Point2D _b) {
+    public TLine(Point2D _a, Point2D _b) {
 	Point2D points[] = sorted(_a,_b);
 	this.a = points[0];
 	this.b = points[1];
@@ -90,7 +115,7 @@ public class Line
      * Calculate intersection between rects defined by this Line and b.
      *
      */
-    public Point2D outIntersection(Line b)
+    public Point2D outIntersection(TLine b)
     {
 	if(!(isAxisParallel() && b.isAxisParallel())) {
 	    //TODO: intersection of oblique rects
@@ -118,10 +143,34 @@ public class Line
 	    }
 	}
     }
+    
+    
+	public Rectangle2D rectFromLine(TLine l, double thickness) {
+		double x = Math.min(l.getA().getX(), l.getB().getX());
+		double y = Math.min(l.getA().getY(), l.getB().getY());
+		double width = Math.max(l.getA().getX(), l.getB().getX()) - x;
+		double height = Math.max(l.getA().getY(), l.getB().getY()) - y;
+		Rectangle2D r = new Rectangle2D.Double(x,y,width,height);
+		
+		return ExpandTransform.expandRect(r, thickness);
+	}
+
 
     public String toString() {
-	return String.format("Line(%.2f,%.2f,%.2f,%.2f)",
+	return String.format(Locale.ROOT, "Line(%.2f, %.2f, %.2f, %.2f)",
 			     a.getX(), a.getY(),
 			     b.getX(), b.getY());
     }
+
+	@Override
+	public Point2D getPosition() {
+		double x = Math.min(getA().getX(), getB().getX());
+		double y = Math.min(getA().getY(), getB().getY());
+		return new Point2D.Double(x,y);
+	}
+
+	@Override
+	public Rectangle2D getBounds() {
+		return rectFromLine(this,0);
+	}
 }
