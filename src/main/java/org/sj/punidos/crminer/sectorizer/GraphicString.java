@@ -57,6 +57,7 @@ public class GraphicString implements Positionable {
 	
 	public String toString() {
 		return String.format("(%s,%2f,%2f)", text, bounds.getX(), bounds.getY());
+<<<<<<< HEAD
 	}
 	
 	public void add(GraphicString gs, String union) {
@@ -67,5 +68,7 @@ public class GraphicString implements Positionable {
 	
 	public void add(GraphicString gs) {
 		add(gs, "");
+=======
+>>>>>>> 18c9f66dcb13ae633dae5ca0fd69decdf6e3788a
 	}
 }
