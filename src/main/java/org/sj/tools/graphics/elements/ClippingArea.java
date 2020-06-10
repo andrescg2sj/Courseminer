@@ -18,7 +18,7 @@
  */
  
 
-package org.sj.punidos.crminer.cepi.pdfboximpl;
+package org.sj.tools.graphics.elements;
 
 import java.awt.geom.Rectangle2D;
 

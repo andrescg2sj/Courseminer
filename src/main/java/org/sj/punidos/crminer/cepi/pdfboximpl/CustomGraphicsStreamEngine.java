@@ -79,6 +79,8 @@ import org.sj.punidos.crminer.tablemkr.SplitTableMaker;
 import org.sj.punidos.crminer.tablemkr.TLine;
 import org.sj.punidos.crminer.tablemkr.Table;
 import org.sj.punidos.crminer.tablemkr.TableMaker;
+import org.sj.tools.graphics.elements.ClippingArea;
+import org.sj.tools.graphics.elements.GrPath;
 import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
 
 import java.util.logging.Logger;
