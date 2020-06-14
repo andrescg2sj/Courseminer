@@ -33,7 +33,16 @@
       <version>1.3</version>
       <scope>test</scope>
       </dependency>
-      -->
+    -->
+
+     <dependency>
+      <groupId>org.sj.tools.pdfjuice</groupId>
+      <artifactId>PDFJuice</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/PDFJuice-1.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+
 
     <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox-tools -->
     <dependency>

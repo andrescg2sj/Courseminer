@@ -24,8 +24,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
-//import org.sj.punidos.crminer.sectorizer.Positionable;
-import org.sj.punidos.crminer.sectorizer.GraphicString;
+//import org.sj.tools.graphics.sectorizer.Positionable;
+import org.sj.tools.graphics.sectorizer.GraphicString;
 
 public class PDFString extends GraphicString {
 	

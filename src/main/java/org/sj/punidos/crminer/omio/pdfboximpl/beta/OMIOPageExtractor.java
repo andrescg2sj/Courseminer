@@ -67,9 +67,9 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
-import org.sj.punidos.crminer.sectorizer.StringRegion;
-import org.sj.punidos.crminer.sectorizer.GStringBuffer;
-import org.sj.punidos.crminer.sectorizer.StrRegionCluster;
+import org.sj.tools.graphics.sectorizer.StringRegion;
+import org.sj.tools.graphics.sectorizer.GStringBuffer;
+import org.sj.tools.graphics.sectorizer.StrRegionCluster;
 /**
  *
  * 

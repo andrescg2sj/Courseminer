@@ -66,7 +66,7 @@ import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.rendering.PageDrawerParameters;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
-import org.sj.punidos.crminer.sectorizer.GStringBuffer;
+import org.sj.tools.graphics.sectorizer.GStringBuffer;
 /**
  * Example showing custom rendering by subclassing PageDrawer.
  * 
