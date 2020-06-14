@@ -2,6 +2,7 @@ package org.sj.punidos.crminer;
 
 import java.io.File;
 import java.nio.file.Paths;
+import org.sj.tools.graphics.tablemkr.util.PDFTableExporter;
 
 import java.nio.file.Path;
 
@@ -27,10 +28,10 @@ public class ExampleGenerator {
 		    		Path currentPath = (Path) Paths.get(System.getProperty("user.dir"));
 		    		Path filePath = (Path) Paths.get(currentPath.toString(), dstPath, newFilename);
 		    		//System.out.print(child.getAbsolutePath() + " will be: ");
-		    		PDFTableToHTML proc = new PDFTableToHTML(child.getAbsolutePath());
+		    		PDFTableExporter proc = new PDFTableExporter();
 		    		System.out.println("Writing " + filePath.toString());
 		    		proc.setDestination(filePath.toString());
-		    		proc.run(null);
+		    		proc.run(child.getAbsolutePath());
 		    		
 		    		//filterNotes(child);
 		    		

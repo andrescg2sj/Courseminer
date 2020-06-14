@@ -22,12 +22,11 @@ Run
 ===
 
 
-Test with:
-```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar org.sj.punidos.crminer.PDFTableToHTML res/CEPI-1-1.pdf -o test.htm
-```
+Generate examples (available in repository, will be overwritten):
 
-You can find a little more information [on the wiki](https://github.com/andrescg2sj/Courseminer/wiki/Full-page-HTML-export-starting-to-work).
+```
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.0-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
+```
 
 
 Presentación
@@ -61,11 +60,14 @@ Compilar con dependencias:
 mvn compile package assembly:single
 ```
 
-Probar `PDFTableToHTML`:
+
+Pruebas. Generar ejemplos:
+
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar org.sj.punidos.crminer.PDFTableToHTML res/CEPI-1-1.pdf -o test.htm
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.0-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
 ```
+
 
 
 Estructura
