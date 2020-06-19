@@ -8,6 +8,8 @@ The main functionality of this project is formatting course information in a con
 
 PDF information extraction functionality is being migrated to [PDFJuice](https://github.com/andrescg2sj/PDFJuice) project.
 
+Courseminer and PDFJuice are possible thanks to [PDFBox](https://pdfbox.apache.org/).
+
 
 Compile
 ====
@@ -42,6 +44,8 @@ El objetivo de **Courseminer** es facilitar esta tarea, procesando automáticame
 El propódito de este programa es generar tablas con la información de los cursos organizada.
 
 La funcionalidad de extraer información de documentos PDF está siendo transferida al proyecto [PDFJuice](https://github.com/andrescg2sj/PDFJuice).
+
+Courseminer y PDFJuice son posibles gracias a: [PDFBox](https://pdfbox.apache.org/).
 
 Primeros pasos
 ====
