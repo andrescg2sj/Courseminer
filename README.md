@@ -8,7 +8,7 @@ The main functionality of this project is formatting course information in a con
 
 PDF information extraction functionality is being migrated to [PDFJuice](https://github.com/andrescg2sj/PDFJuice) project.
 
-Courseminer and PDFJuice are possible thanks to [PDFBox](https://pdfbox.apache.org/).
+Courseminer and PDFJuice are possible thanks to [Apache PDFBox](https://pdfbox.apache.org/).
 
 
 Compile
@@ -45,7 +45,7 @@ El propódito de este programa es generar tablas con la información de los curs
 
 La funcionalidad de extraer información de documentos PDF está siendo transferida al proyecto [PDFJuice](https://github.com/andrescg2sj/PDFJuice).
 
-Courseminer y PDFJuice son posibles gracias a: [PDFBox](https://pdfbox.apache.org/).
+Courseminer y PDFJuice son posibles gracias a [Apache PDFBox](https://pdfbox.apache.org/).
 
 Primeros pasos
 ====
