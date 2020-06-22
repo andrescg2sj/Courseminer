@@ -35,6 +35,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.sj.tools.graphics.tablemkr.frompdf.ExtractionProperties;
+import org.sj.tools.graphics.tablemkr.frompdf.PDFPageTableExtractor;
 import org.sj.tools.graphics.tablemkr.frompdf.PDFTableExtractor;
 //import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
 
@@ -61,8 +63,8 @@ public class PDFTableToHTML implements CommonInfo
     
     String dstFilename;
     
-    double maxLineThickness = PDFTableExtractor.DEFAULT_THICKNESS;
-	double minProximity = PDFTableExtractor.DEFAULT_PROXIMITY;
+    ExtractionProperties properties = new ExtractionProperties();
+    
     		
     
     public PDFTableToHTML(String path) {
@@ -126,9 +128,8 @@ public class PDFTableToHTML implements CommonInfo
     	    doc = PDDocument.load(file);
     	    for(int i=0; i< doc.getNumberOfPages(); i++) {
     	    	PDPage page = doc.getPage(i);
-    	    	PDFTableExtractor engine =
-    	    			new PDFTableExtractor(page, clipRect, 
-    	    					maxLineThickness, minProximity);
+    	    	PDFPageTableExtractor engine =
+    	    			new PDFPageTableExtractor(page, properties);
     	    	engine.run();
         	    engine.writeHTMLTables(out);
     	    }
@@ -202,11 +203,11 @@ public class PDFTableToHTML implements CommonInfo
     		PDFTableToHTML proc = new PDFTableToHTML(path);
     		
     		if(cmd.hasOption("t")) {
-    			proc.maxLineThickness = Double.parseDouble(cmd.getOptionValue("t"));
+    			proc.properties.setMaxLineThickness(Double.parseDouble(cmd.getOptionValue("t")));
     		}
     		
     		if(cmd.hasOption("p")) {
-    			proc.minProximity = Double.parseDouble(cmd.getOptionValue("p"));
+    			proc.properties.setMinProximity(Double.parseDouble(cmd.getOptionValue("p")));
     		}
     		
     		if(cmd.hasOption("o")) {
