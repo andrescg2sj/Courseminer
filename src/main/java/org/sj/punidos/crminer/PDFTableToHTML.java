@@ -35,7 +35,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
+import org.sj.tools.graphics.tablemkr.frompdf.PDFTableExtractor;
+//import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
 
 
 
@@ -60,8 +61,8 @@ public class PDFTableToHTML implements CommonInfo
     
     String dstFilename;
     
-    double maxLineThickness = CustomGraphicsStreamEngine.DEFAULT_THICKNESS;
-	double minProximity = CustomGraphicsStreamEngine.DEFAULT_PROXIMITY;
+    double maxLineThickness = PDFTableExtractor.DEFAULT_THICKNESS;
+	double minProximity = PDFTableExtractor.DEFAULT_PROXIMITY;
     		
     
     public PDFTableToHTML(String path) {
@@ -125,8 +126,8 @@ public class PDFTableToHTML implements CommonInfo
     	    doc = PDDocument.load(file);
     	    for(int i=0; i< doc.getNumberOfPages(); i++) {
     	    	PDPage page = doc.getPage(i);
-    	    	CustomGraphicsStreamEngine engine =
-    	    			new CustomGraphicsStreamEngine(page, clipRect, 
+    	    	PDFTableExtractor engine =
+    	    			new PDFTableExtractor(page, clipRect, 
     	    					maxLineThickness, minProximity);
     	    	engine.run();
         	    engine.writeHTMLTables(out);
