@@ -65,13 +65,16 @@ mvn compile package assembly:single
 ```
 
 
-Pruebas. Generar ejemplos:
+Pruebas
+-------
 
+Para descargar los  documentos publicados por los CEPIs y generar versiones en HTML
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.1-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.1-SNAPSHOT.jar org.sj.punidos.crminer.cepi.CepiList
 ```
 
+Este comando genera las correspondientes versiones HTML en el directorio `out/cepi-demo/html/`.
 
 
 Estructura
