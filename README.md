@@ -27,7 +27,7 @@ Run
 Generate examples (available in repository, will be overwritten):
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.0-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.1-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
 ```
 
 
@@ -69,7 +69,7 @@ Pruebas. Generar ejemplos:
 
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.0-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.1-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
 ```
 
 
