@@ -93,17 +93,21 @@ public class CepiWeb {
 	public void downloadAndProcess() {
 		pdfURL = findCourses();
 		String pdfName = getURLFilename(pdfURL);
-		String dstDir = "res/cepi/";
-		File storePath = new File(dstDir); 
-		pdfFile = new File(storePath, pdfName);
+		File base = new File(CepiList.BASE_DIR);
+		File dstDir = new File(base, "pdf/");
+		CepiList.createDirectory(dstDir);
+		    
+		//File storePath = new File(dstDir); 
+		pdfFile = new File(dstDir, pdfName);
 		String pdfPath = pdfFile.getPath();
 		if(pdfFile.exists()) {
 			System.out.println("Present: " +pdfPath);
 		} else {
 			System.out.println("Downloading...");
-			pdfPath = downloadCourses(dstDir);
+			pdfPath = downloadCourses(dstDir.getAbsolutePath());
 		}
-		File dstLocation = new File("out/cepi");
+		File dstLocation = new File(base, "html/");
+		CepiList.createDirectory(dstLocation);
 		dstPath = new File(dstLocation, ExampleGenerator.changeExtension(pdfName, ".html"));
 		if(!dstPath.exists()) {
 			exportCourses(pdfPath, dstPath.getAbsolutePath());

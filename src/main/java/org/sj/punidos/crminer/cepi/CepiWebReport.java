@@ -1,5 +1,7 @@
 package org.sj.punidos.crminer.cepi;
 
+import java.io.File;
+
 public class CepiWebReport extends CepiWeb {
 	
 	String month;
@@ -22,7 +24,11 @@ public class CepiWebReport extends CepiWeb {
 		data.append("</td>");
 
 		data.append("<td>");
-		data.append(String.format("<a href=\"file://%s\">%s</a>",dstPath.getAbsoluteFile(),dstPath.getName()));
+		//TODO: Create class Resources to manage this.
+		File base = new File(CepiList.BASE_DIR);
+		String dstFullpath = dstPath.getAbsolutePath();
+		String relPath = dstFullpath.substring(base.getAbsolutePath().length()+1);
+		data.append(String.format("<a href=\"./%s\">%s</a>",relPath,dstPath.getName()));
 		data.append("</td>");
 
 		data.append("</tr>");

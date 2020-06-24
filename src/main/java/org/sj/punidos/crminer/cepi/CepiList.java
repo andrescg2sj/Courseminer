@@ -17,6 +17,7 @@ import org.sj.tools.graphics.tablemkr.frompdf.PDFPageTableExtractor;
 public class CepiList implements CommonInfo {
 	
 	List<CepiWeb> cepis = new LinkedList<CepiWeb>();
+    public static final String BASE_DIR = "out/cepi-demo/";
 	
 	public CepiList(String listfile) throws IOException {
 		load(listfile);
@@ -51,8 +52,18 @@ public class CepiList implements CommonInfo {
 		}
 		br.close();
 	}
+
+        public static void createDirectory(File dir) {
+	    //TODO: avoid redundancy of this kind of function.
+	    //File dir = new File(path);
+	    if(!dir.isDirectory()) {
+		dir.mkdirs();
+	    }
+	}
+
 	
 	public void processAll() {
+	    
 		StringBuilder report = new StringBuilder();
 		report.append("<table>");
 		for(CepiWeb cepi : cepis) {
@@ -62,14 +73,17 @@ public class CepiList implements CommonInfo {
 			report.append(rep.getHtmlRow(cepi));
 		}
 		report.append("</table>");
-		writeFullReport("out/report.html", report.toString());
+		writeFullReport(report.toString());
 	}
 	
-	public void writeFullReport(String dstFilename, String tablehtml) {
+	public void writeFullReport(String tablehtml) {
+	    File base = new File(BASE_DIR);
+	    createDirectory(base);
+	    
 		try {
-			File dstFile = new File(dstFilename);
-	    	FileOutputStream fos = new FileOutputStream(dstFile);
-	    	OutputStreamWriter out = new OutputStreamWriter(fos);
+		    File dstFile = new File(base, "report.html");
+		    FileOutputStream fos = new FileOutputStream(dstFile);
+		    OutputStreamWriter out = new OutputStreamWriter(fos);
 	
 	    	//write head
 	    	out.write("<body><html>" + NEW_LINE);
