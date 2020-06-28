@@ -41,7 +41,7 @@ import org.sj.tools.graphics.tablemkr.frompdf.PDFTableExtractor;
 //import org.sj.punidos.crminer.cepi.pdfboximpl.CustomGraphicsStreamEngine;
 
 
-
+@Deprecated
 public class PDFTableToHTML implements CommonInfo
 {
     static String DEFAULT_PATH = "res/CEPI-1-1.pdf";
@@ -131,7 +131,7 @@ public class PDFTableToHTML implements CommonInfo
     	    	PDFPageTableExtractor engine =
     	    			new PDFPageTableExtractor(page, properties);
     	    	engine.run();
-        	    engine.writeHTMLTables(out);
+        	    //engine.writeHTMLTables(out);
     	    }
     	    doc.close();
     	    

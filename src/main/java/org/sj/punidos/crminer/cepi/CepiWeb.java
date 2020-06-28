@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.sj.punidos.crminer.courses.Course;
+import org.sj.tools.graphics.tablemkr.frompdf.PDFTableExtractor;
 import org.sj.tools.graphics.tablemkr.util.PDFTableExporter;
 import org.sj.tools.pdfjuice.ExampleGenerator;
 
@@ -17,15 +20,13 @@ public class CepiWeb {
 	String name;
 	String link;
 	File dstPath;
-	File pdfFile;
-	String pdfURL;
+	WebResource pdf;
 	
 	CepiWeb(CepiWeb cepi) {
 		name = cepi.name;
 		link = cepi.link;
-		pdfFile = cepi.pdfFile;
+		pdf = cepi.pdf;
 		dstPath = cepi.dstPath;
-		pdfURL = cepi.pdfURL;
 	}
 	
 	public CepiWeb(String name, String link) {
@@ -56,20 +57,6 @@ public class CepiWeb {
 		return selected;
 	}
 	
-	/**
-	 * 
-	 * @param dstDir directory to store file into. 
-	 * @return path to saved file.
-	 */
-	public String downloadCourses(String dstDir) {
-	    String fileURL = this.findCourses();
-	    try {
-	    	return HttpDownloadUtility.downloadFile(fileURL, dstDir);
-	    } catch (IOException ex) {
-	    	ex.printStackTrace();
-	    }
-		return null;
-	}
 	
 	
 	
@@ -84,36 +71,47 @@ public class CepiWeb {
 		exp.run(pdfPath);
 	}
 	
-	public static String getURLFilename(String url) {
-		int j = url.lastIndexOf("/");
-		if(j == -1) return url;
-		return url.substring(j+1);
-	}
 	
-	public void downloadAndProcess() {
-		pdfURL = findCourses();
-		String pdfName = getURLFilename(pdfURL);
-		File base = new File(CepiList.BASE_DIR);
+	public String downloadPDF(File base) {
 		File dstDir = new File(base, "pdf/");
 		CepiList.createDirectory(dstDir);
 		    
-		//File storePath = new File(dstDir); 
-		pdfFile = new File(dstDir, pdfName);
-		String pdfPath = pdfFile.getPath();
-		if(pdfFile.exists()) {
-			System.out.println("Present: " +pdfPath);
-		} else {
-			System.out.println("Downloading...");
-			pdfPath = downloadCourses(dstDir.getAbsolutePath());
-		}
+		//File storePath = new File(dstDir);
+		pdf = new WebResource(findCourses());
+		return pdf.download(dstDir);
+	}
+	
+	public void downloadAndProcess() {
+		File base = new File(CepiList.BASE_DIR);
+		String pdfPath = downloadPDF(base);
 		File dstLocation = new File(base, "html/");
 		CepiList.createDirectory(dstLocation);
+		String pdfName = pdf.getFilename();
 		dstPath = new File(dstLocation, ExampleGenerator.changeExtension(pdfName, ".html"));
 		if(!dstPath.exists()) {
 			exportCourses(pdfPath, dstPath.getAbsolutePath());
 		}
 		System.out.println("File: "+ dstPath);
-		
+	}
+	
+	public List<Course> getCourses() {
+		File base = new File(CepiList.BASE_DIR);
+		downloadPDF(base);
+
+		// ---
+		PDFTableExtractor extractor = new PDFTableExtractor(pdf.getFile());
+		CourseFactory factory;
+		try {
+			factory = new CourseFactory(name, extractor.getAllTables());
+			List<Course> courses = factory.getCourses();
+			System.out.println("Failed: "+factory.countFailed());
+			return courses;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public String getDstPath() {
@@ -123,7 +121,12 @@ public class CepiWeb {
 	public static void main(String args[]) {
 		System.out.println("testing urls");
 		CepiWeb cepi = new CepiWeb("Arganzuela", "https://www.comunidad.madrid/centros/cepi-madrid-arganzuela");
-		cepi.downloadAndProcess();
+		//cepi.downloadAndProcess();
+		System.out.println("Showing courses:");
+		List<Course> courses = cepi.getCourses();
+		for(Course c : courses) {
+			System.out.println(c.toString());
+		}
 			
 	}
 

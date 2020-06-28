@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.LinkedList;
@@ -12,6 +13,8 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.sj.punidos.crminer.CommonInfo;
+import org.sj.punidos.crminer.courses.Course;
+import org.sj.punidos.crminer.courses.CourseCsvWriter;
 import org.sj.tools.graphics.tablemkr.frompdf.PDFPageTableExtractor;
 
 public class CepiList implements CommonInfo {
@@ -98,12 +101,24 @@ public class CepiList implements CommonInfo {
 		}
 	}
 	
+	public void allToCsv(String filename) throws IOException {
+		File file = new File(filename);
+		FileWriter fw = new FileWriter(file);
+		CourseCsvWriter cw = new CourseCsvWriter(fw);
+		for(CepiWeb cepi : cepis) {
+			List<Course> courses = cepi.getCourses();
+			cw.write(courses);
+		}
+		cw.close();
+	}
+	
 	
 	public static void main(String args[]) {
 		
 		try {
 			CepiList list = new CepiList("res/cepi-list.txt");
-			list.processAll();
+			//list.processAll();
+			list.allToCsv("out/courses.csv");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -20,7 +20,7 @@ public class CepiWebReport extends CepiWeb {
 		data.append("</td>");
 
 		data.append("<td>");
-		data.append(String.format("<a href=\"%s\">%s</a>",pdfURL,pdfFile.getName()));
+		data.append(String.format("<a href=\"%s\">%s</a>",pdf.getURL(),pdf.getFilename()));
 		data.append("</td>");
 
 		data.append("<td>");

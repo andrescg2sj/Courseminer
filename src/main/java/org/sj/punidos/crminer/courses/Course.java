@@ -24,6 +24,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 public class Course {
+	String entity;
+	String category;
 	String name;
 	String date;
 	String hours;
@@ -36,6 +38,7 @@ public class Course {
 		return in;
 	}
 	
+	
 	public Course(String _name, String _date, String _hours) {
 		this.name = _name;
 		this.date = _date;
@@ -44,7 +47,7 @@ public class Course {
 			parseHours();
 		}
 	}
-
+	
 	
 	public Course(String _name, String _date, String _hours, String _register) {
 		this.name = _name;
@@ -55,6 +58,13 @@ public class Course {
 		}
 		this.register = _register;
 	}
+	
+	public void setEntity(String ent) {
+		entity = ent;
+	}
+
+
+	
 	
 	private void parseHours() {
 		try {
@@ -78,5 +88,11 @@ public class Course {
 	public String toString() {
 		return "course("+ name+","+date+","+hours+","+register+")";
 	}
+	
+	public String getName() {
+		return name;
+	}
+	
+
 
 }
