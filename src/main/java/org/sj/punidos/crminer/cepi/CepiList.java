@@ -117,8 +117,11 @@ public class CepiList implements CommonInfo {
 		
 		try {
 			CepiList list = new CepiList("res/cepi-list.txt");
-			//list.processAll();
-			list.allToCsv("out/courses.csv");
+			if(args.length > 0 && args[0].equals("-csv")) {
+			    list.allToCsv("out/courses.csv");
+			} else {
+			    list.processAll();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
