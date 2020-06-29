@@ -76,6 +76,8 @@ java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-
 
 Este comando genera las correspondientes versiones HTML en el directorio `out/cepi-demo/html/`.
 
+Si se ejecuta este mismo comando con el argumento `-csv`, se genera el fichero `out/courses.csv`, que contiene la información de todos los cursos.
+
 
 Estructura
 ===
