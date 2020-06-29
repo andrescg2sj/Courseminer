@@ -9,7 +9,7 @@ import java.util.Vector;
 
 public class CourseCsvWriter implements CourseWriter {
 	
-	String pattern[] = "period,entity,name,category,subcategory,addressee,ReqAdd,register,CatReg,price,CatDurat,duration,dates,CatSched,schedule,ContAddr,ContTransp,ContTel,ContInternet".split(","); 
+	String pattern[] = "period,entity,name,category,subcategory,addressee,ReqAdd,register,CatReg,price,CatDurat,duration,date,CatSched,schedule,ContAddr,ContTransp,ContTel,ContInternet".split(","); 
 			
 	Writer writer;
 	
