@@ -27,7 +27,7 @@ Run
 Generate examples (available in repository, will be overwritten):
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.1-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.2-SNAPSHOT.jar org.sj.punidos.crminer.ExampleGenerator
 ```
 
 
@@ -71,7 +71,7 @@ Pruebas
 Para descargar los  documentos publicados por los CEPIs y generar versiones en HTML
 
 ```
-java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.1-SNAPSHOT.jar org.sj.punidos.crminer.cepi.CepiList
+java -cp target/crminer-app-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/PDFJuice-1.2-SNAPSHOT.jar org.sj.punidos.crminer.cepi.CepiList
 ```
 
 Este comando genera las correspondientes versiones HTML en el directorio `out/cepi-demo/html/`.
