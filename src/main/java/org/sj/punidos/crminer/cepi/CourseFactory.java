@@ -46,19 +46,19 @@ public class CourseFactory {
 		//System.out.println(t.toHTML());
 		LinkedList<Course> crs = new LinkedList<Course>();
 		if(t.getCols() == 1 && t.getRows() == 1) {
-			System.out.println("Processiong general");
+			//System.out.println("Processiong general");
 
 			processGeneralHeader(t.get(0,0));
 			return crs;
 		} else {
-			System.out.println("Processing table: rows:" + t.getRows());
+			//System.out.println("Processing table: rows:" + t.getRows());
 			for(int r = 0; r<t.getRows(); r++) {
 				Cell c = t.get(0, r);
 				if(c.getColSpan() == t.getCols()) {
-					System.out.println("Processiong header");
+					//System.out.println("Processiong header");
 					processTableHeader(c);
 				} else {
-					System.out.println("Reading course");
+					//System.out.println("Reading course");
 					Course course = readData(t,r);
 					if(course != null) {
 						crs.add(course);
@@ -133,8 +133,23 @@ public class CourseFactory {
 		if(isTitleRow(data)) {
 			return null;
 		}
-		Course c = new Course(data.get(i_name).trim(), data.get(i_date).trim(), 
-				data.get(i_hours).trim(), data.get(i_register).trim());
+		
+		String name = "";
+		String date = "";
+		String hours = "";
+		String register = "";
+		
+		//TODO: make a more robust malformed table management.
+		try {
+			name = data.get(i_name).trim();
+			date = data.get(i_date).trim();
+			hours = data.get(i_hours).trim();
+			register = data.get(i_register).trim();
+		} catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("Warning: "+ e.toString());
+		}
+		
+		Course c = new Course(name, date, hours, register); 
 		c.setEntity(centerName.trim());
 		return c;
 	}

@@ -65,7 +65,7 @@ public class CepiWeb {
 	 * @param pdfPath
 	 * @return
 	 */
-	public void exportCourses(String pdfPath, String dstPath) {
+	public void exportCoursesToHTML(String pdfPath, String dstPath) {
 		PDFTableExporter exp = new PDFTableExporter();
 		exp.setDestination(dstPath);
 		exp.run(pdfPath);
@@ -81,7 +81,7 @@ public class CepiWeb {
 		return pdf.download(dstDir);
 	}
 	
-	public void downloadAndProcess() {
+	public void downloadAndExportToHTML() {
 		File base = new File(CepiList.BASE_DIR);
 		String pdfPath = downloadPDF(base);
 		File dstLocation = new File(base, "html/");
@@ -89,7 +89,7 @@ public class CepiWeb {
 		String pdfName = pdf.getFilename();
 		dstPath = new File(dstLocation, ExampleGenerator.changeExtension(pdfName, ".html"));
 		if(!dstPath.exists()) {
-			exportCourses(pdfPath, dstPath.getAbsolutePath());
+			exportCoursesToHTML(pdfPath, dstPath.getAbsolutePath());
 		}
 		System.out.println("File: "+ dstPath);
 	}
@@ -114,18 +114,26 @@ public class CepiWeb {
 		}
 	}
 	
+	public String getName() {
+		return name;		
+	}
+	
 	public String getDstPath() {
 		return dstPath.getAbsolutePath();
 	}
 	
 	public static void main(String args[]) {
 		System.out.println("testing urls");
-		CepiWeb cepi = new CepiWeb("Arganzuela", "https://www.comunidad.madrid/centros/cepi-madrid-arganzuela");
-		//cepi.downloadAndProcess();
-		System.out.println("Showing courses:");
-		List<Course> courses = cepi.getCourses();
-		for(Course c : courses) {
-			System.out.println(c.toString());
+		if(args.length == 2) {
+			String name = args[0];
+			String url = args[1];
+			CepiWeb cepi = new CepiWeb(name, url);
+			//cepi.downloadAndProcess();
+			System.out.println("Showing courses:");
+			List<Course> courses = cepi.getCourses();
+			for(Course c : courses) {
+				System.out.println(c.toString());
+			}
 		}
 			
 	}

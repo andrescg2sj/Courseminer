@@ -10,6 +10,13 @@ import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.sj.punidos.crminer.CommonInfo;
@@ -65,18 +72,22 @@ public class CepiList implements CommonInfo {
 	}
 
 	
-	public void processAll() {
-	    
+	public void exportAllToHTML() {
+		exportCepisToHTML(cepis);
+	}
+	
+	public void exportCepisToHTML(List<CepiWeb> selected) {
 		StringBuilder report = new StringBuilder();
 		report.append("<table>");
-		for(CepiWeb cepi : cepis) {
+		for(CepiWeb cepi : selected) {
 			System.out.println("Cepi: "+cepi.link);
-			cepi.downloadAndProcess();
+			cepi.downloadAndExportToHTML();
 			CepiWebReport rep = new CepiWebReport(cepi);
 			report.append(rep.getHtmlRow(cepi));
 		}
 		report.append("</table>");
 		writeFullReport(report.toString());
+		
 	}
 	
 	public void writeFullReport(String tablehtml) {
@@ -102,27 +113,92 @@ public class CepiList implements CommonInfo {
 	}
 	
 	public void allToCsv(String filename) throws IOException {
+		cepisToCsv(cepis, filename);
+	}
+	
+	public void cepisToCsv(List<CepiWeb> selected, String filename) throws IOException {
 		File file = new File(filename);
 		FileWriter fw = new FileWriter(file);
 		CourseCsvWriter cw = new CourseCsvWriter(fw);
-		for(CepiWeb cepi : cepis) {
+		for(CepiWeb cepi : selected) {
+			System.out.println("Processing: "+cepi.getName());
 			List<Course> courses = cepi.getCourses();
 			cw.write(courses);
 		}
 		cw.close();
+		
 	}
 	
 	
+	public CepiWeb getCepi(String name) {
+		for (CepiWeb c: cepis) {
+			if(c.getName().equals(name)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	public List<CepiWeb> selectCepis(String names[]) {
+		List<CepiWeb> selected = new LinkedList<CepiWeb>(); 
+        if(names.length > 0) {
+        	selected = new LinkedList<CepiWeb>();
+        	for(String name: names) {
+        		CepiWeb cepi = getCepi(name);
+        		if(cepi == null) {
+        			System.out.println("CEPI '"+name+"' not found!");
+        		} else {
+        			System.out.println("Loading CEPI '"+name+"'");
+        			selected.add(cepi);
+        		}
+        	}
+        } else {
+			System.out.println("Loading all CEPIs");
+        	selected = cepis;
+        }
+        return selected;
+
+	}
+	
+	static {
+	      System.setProperty("java.util.logging.config.file",
+	              "./logging.properties");
+	      //must initialize loggers after setting above property
+	      //LOGGER = Logger.getLogger(MyClass.class.getName());
+	  }
+	
+	
 	public static void main(String args[]) {
+		Options options = new Options();
+
+		Option optInput = new Option("csv", "csv_filename", true, "output CSV file");
+        optInput.setRequired(false);
+        options.addOption(optInput);
+
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
+
 		
 		try {
 			CepiList list = new CepiList("res/cepi-list.txt");
-			if(args.length > 0 && args[0].equals("-csv")) {
-			    list.allToCsv("out/courses.csv");
+
+			cmd = parser.parse(options, args);
+
+            String remaining[] = cmd.getArgs();
+            List<CepiWeb> selectedCepis = list.selectCepis(remaining);
+			
+			if(cmd.hasOption("csv")) {
+				String filename = cmd.getOptionValue("csv");
+				list.cepisToCsv(selectedCepis, filename);
 			} else {
-			    list.processAll();
+				list.exportCepisToHTML(selectedCepis);
 			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
