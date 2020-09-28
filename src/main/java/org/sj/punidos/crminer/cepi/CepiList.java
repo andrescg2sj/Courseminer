@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.sj.punidos.crminer.CommonInfo;
 import org.sj.punidos.crminer.courses.Course;
 import org.sj.punidos.crminer.courses.CourseCsvWriter;
+import org.sj.punidos.crminer.courses.CourseXlsxWriter;
 import org.sj.tools.graphics.tablemkr.frompdf.PDFPageTableExtractor;
 
 public class CepiList implements CommonInfo {
@@ -129,6 +130,17 @@ public class CepiList implements CommonInfo {
 		
 	}
 	
+	public void cepisToXlsx(List<CepiWeb> selected, String filename) throws IOException {
+		CourseXlsxWriter xw = new CourseXlsxWriter(filename);
+		for(CepiWeb cepi : selected) {
+			System.out.println("Processing: "+cepi.getName());
+			List<Course> courses = cepi.getCourses();
+			xw.write(courses);
+		}
+		xw.writeAndClose();
+	}
+
+	
 	
 	public CepiWeb getCepi(String name) {
 		for (CepiWeb c: cepis) {
@@ -167,13 +179,25 @@ public class CepiList implements CommonInfo {
 	      //LOGGER = Logger.getLogger(MyClass.class.getName());
 	  }
 	
+	public void export(List<CepiWeb> cepis, String format, String filename) throws IOException {
+		if("csv".equals(format)) {
+			cepisToCsv(cepis, filename);
+		} else {
+			cepisToXlsx(cepis, filename);
+			
+		}
+	}
 	
 	public static void main(String args[]) {
 		Options options = new Options();
 
-		Option optInput = new Option("csv", "csv_filename", true, "output CSV file");
-        optInput.setRequired(false);
-        options.addOption(optInput);
+		Option optOutput = new Option("o", "output_filename", true, "output CSV file");
+        optOutput.setRequired(false);
+        options.addOption(optOutput);
+
+		Option optFormat = new Option("f", "output_format", true, "output format");
+        optFormat.setRequired(false);
+        options.addOption(optFormat);
 
 
         CommandLineParser parser = new DefaultParser();
@@ -189,9 +213,13 @@ public class CepiList implements CommonInfo {
             String remaining[] = cmd.getArgs();
             List<CepiWeb> selectedCepis = list.selectCepis(remaining);
 			
-			if(cmd.hasOption("csv")) {
-				String filename = cmd.getOptionValue("csv");
-				list.cepisToCsv(selectedCepis, filename);
+			if(cmd.hasOption("o")) {
+				String filename = cmd.getOptionValue("o");
+				String format = "xlsx";
+				if(cmd.hasOption("f")) {
+					format = cmd.getOptionValue("f");
+				}
+				list.export(selectedCepis, format, filename);
 			} else {
 				list.exportCepisToHTML(selectedCepis);
 			}

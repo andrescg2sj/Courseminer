@@ -94,7 +94,21 @@
     	<artifactId>commons-cli</artifactId>
     	<version>1.4</version>
     </dependency>
+    
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>4.0.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>4.0.0</version>
+	</dependency>
+    
   </dependencies>
+  
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->

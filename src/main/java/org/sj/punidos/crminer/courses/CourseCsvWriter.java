@@ -7,9 +7,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class CourseCsvWriter implements CourseWriter {
+public class CourseCsvWriter extends CourseSheetWriter {
 	
-	String pattern[] = "period,entity,name,category,subcategory,addressee,ReqAdd,register,CatReg,price,CatDurat,duration,date,CatSched,schedule,ContAddr,ContTransp,ContTel,ContInternet".split(","); 
 			
 	Writer writer;
 	
@@ -17,31 +16,18 @@ public class CourseCsvWriter implements CourseWriter {
 		writer = w;
 	}
 	
-	HashMap<String,String> toDict(Course c) {
-		HashMap<String,String> dict = new HashMap<String,String>();
-		dict.put("entity", c.entity);
-		dict.put("category", c.category);
-		dict.put("name", c.name);
-		dict.put("schedule", c.hours);
-		dict.put("register", c.register);
-		dict.put("date", c.date);
-
-		return dict;
-	}
 	
 	public String toCsvLine(Course c) {
-		Vector<String> data = new Vector<String>(pattern.length);
+		//Vector<String> data = new Vector<String>(PATTERN.length);
 		
-		HashMap<String,String> dict = toDict(c);
+		Vector<String> data = formatVector(c);
+		Vector<String> quoted = new Vector<String>(data.size());
 		
-		for(String key : pattern) {
-			if(dict.containsKey(key)) {
-				data.add('"' + dict.get(key) + '"');
-			} else {
-				data.add("\"\"");
-			}
+		for(String d : data) {
+			quoted.add('"'+ d+ '"');
 		}
-		return String.join(",", data);
+		
+		return String.join(",", quoted);
 	}
 	
 	public void write(Course c) throws IOException {
@@ -55,11 +41,6 @@ public class CourseCsvWriter implements CourseWriter {
 	}
 
 
-	public void write(Collection<Course> courses) throws IOException {
-		for(Course c: courses) {
-			write(c);
-		}
-	}
 
 	
 }
