@@ -43,7 +43,7 @@ public class CourseFactory {
 	}
 	
 	List<Course> processTable(Table t) {
-		//System.out.println(t.toHTML());
+		System.out.println("Table("+t.getCols()+","+t.getRows()+")");
 		LinkedList<Course> crs = new LinkedList<Course>();
 		if(t.getCols() == 1 && t.getRows() == 1) {
 			//System.out.println("Processiong general");
