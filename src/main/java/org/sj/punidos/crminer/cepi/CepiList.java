@@ -78,22 +78,23 @@ public class CepiList implements CommonInfo {
 	}
 	
 	public void exportCepisToHTML(List<CepiWeb> selected) {
-		StringBuilder report = new StringBuilder();
+	    File base = new File(BASE_DIR);
+	    createDirectory(base);
+
+	    StringBuilder report = new StringBuilder();
 		report.append("<table>");
 		for(CepiWeb cepi : selected) {
 			System.out.println("Cepi: "+cepi.link);
-			cepi.downloadAndExportToHTML();
+			cepi.downloadAndExportToHTML(base);
 			CepiWebReport rep = new CepiWebReport(cepi);
 			report.append(rep.getHtmlRow(cepi));
 		}
 		report.append("</table>");
-		writeFullReport(report.toString());
+		writeFullReport(report.toString(), base);
 		
 	}
 	
-	public void writeFullReport(String tablehtml) {
-	    File base = new File(BASE_DIR);
-	    createDirectory(base);
+	public void writeFullReport(String tablehtml, File base) {
 	    
 		try {
 		    File dstFile = new File(base, "report.html");

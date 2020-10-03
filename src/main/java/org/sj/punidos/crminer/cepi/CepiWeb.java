@@ -83,6 +83,10 @@ public class CepiWeb {
 	
 	public void downloadAndExportToHTML() {
 		File base = new File(CepiList.BASE_DIR);
+		downloadAndExportToHTML(base);
+	}
+
+	public void downloadAndExportToHTML(File base) {
 		String pdfPath = downloadPDF(base);
 		File dstLocation = new File(base, "html/");
 		CepiList.createDirectory(dstLocation);
