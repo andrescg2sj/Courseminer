@@ -4,7 +4,7 @@ A brief presentation
 
 The objective of this project is to gather information about formation courses contained in documents made by different entities in Madrid, Spain.
 
-The main functionality of this project is formatting course information in a convinient way (i.e. a table with a specific format).
+The main functionality of this project is formatting course information in a convenient way (i.e. a table with a specific format).
 
 PDF information extraction functionality is being migrated to [PDFJuice](https://github.com/andrescg2sj/PDFJuice) project.
 
