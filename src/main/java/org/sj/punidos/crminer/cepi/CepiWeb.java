@@ -88,6 +88,9 @@ public class CepiWeb {
 
 	public void downloadAndExportToHTML(File base) {
 		String pdfPath = downloadPDF(base);
+		if(pdfPath == null) {
+		    System.err.println("null resource for " + link);
+		} else {
 		File dstLocation = new File(base, "html/");
 		CepiList.createDirectory(dstLocation);
 		String pdfName = pdf.getFilename();
@@ -96,6 +99,7 @@ public class CepiWeb {
 			exportCoursesToHTML(pdfPath, dstPath.getAbsolutePath());
 		}
 		System.out.println("File: "+ dstPath);
+		}
 	}
 	
 	public List<Course> getCourses() {
