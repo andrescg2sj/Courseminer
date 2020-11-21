@@ -192,6 +192,7 @@ public class CepiList implements CommonInfo {
 	public static void main(String args[]) {
 		Options options = new Options();
 
+
 		Option optOutput = new Option("o", "output_filename", true, "output CSV file");
         optOutput.setRequired(false);
         options.addOption(optOutput);
@@ -213,13 +214,14 @@ public class CepiList implements CommonInfo {
 
             String remaining[] = cmd.getArgs();
             List<CepiWeb> selectedCepis = list.selectCepis(remaining);
-			
-			if(cmd.hasOption("o")) {
+            
+			String format = "xlsx";
+			if(cmd.hasOption("f")) {
+				format = cmd.getOptionValue("f");
+			}
+            
+            if(cmd.hasOption("o")) {
 				String filename = cmd.getOptionValue("o");
-				String format = "xlsx";
-				if(cmd.hasOption("f")) {
-					format = cmd.getOptionValue("f");
-				}
 				list.export(selectedCepis, format, filename);
 			} else {
 				list.exportCepisToHTML(selectedCepis);

@@ -26,9 +26,9 @@ public class CepiWebReport extends CepiWeb {
 		data.append("<td>");
 		//TODO: Create class Resources to manage this.
 		File base = new File(CepiList.BASE_DIR);
-		String dstFullpath = dstPath.getAbsolutePath();
+		String dstFullpath = dstHtml.getAbsolutePath();
 		String relPath = dstFullpath.substring(base.getAbsolutePath().length()+1);
-		data.append(String.format("<a href=\"./%s\">%s</a>",relPath,dstPath.getName()));
+		data.append(String.format("<a href=\"./%s\">%s</a>",relPath,dstHtml.getName()));
 		data.append("</td>");
 
 		data.append("</tr>");
