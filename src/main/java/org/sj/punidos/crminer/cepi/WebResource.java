@@ -9,6 +9,12 @@ public class WebResource {
 	File file;
 	String url;
 	
+	public WebResource(String _URL) {
+		url = _URL;
+
+	}
+
+	
 	
 	/**
 	 * 
@@ -56,10 +62,6 @@ public class WebResource {
 	}
 
 	
-	public WebResource(String _URL) {
-		url = _URL;
-
-	}
 
 	public static String getURLFilename(String url) {
 		int j = url.lastIndexOf("/");

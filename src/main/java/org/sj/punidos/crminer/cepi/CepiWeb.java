@@ -13,6 +13,9 @@ import org.sj.tools.pdfjuice.ExampleGenerator;
 
 public class CepiWeb  {
 	
+	public static final String OUT_PDF_DIR = "pdf";  
+	public static final String OUT_HTML_DIR= "html";  
+	
 	String name;
 	CepiCourseList courseList;
 	String link;
@@ -24,6 +27,7 @@ public class CepiWeb  {
 		name = cepi.name;
 		link = cepi.link;
 		pdf = cepi.pdf;
+		dstHtml = cepi.dstHtml;
 	}
 	
 	public CepiWeb(String _name, String _link) {
@@ -55,17 +59,25 @@ public class CepiWeb  {
 	}
 	
 	
-	
+	public String formatDstPath(String folder) {
+		String month = DateManager.getMonth(pdf.url);
+		if("".equals(month)) {
+			System.out.println("Warning! no month in: "+pdf.url);
+			return folder + "/";
+		}
+		DateManager datem = new DateManager(pdf.url);
+		return String.format("%s/%d/%02d/", folder, datem.getYear(), datem.getMonthNum());
+	}
 	
 
 	
 	
 	public String downloadPDF(File base) {
-		File dstDir = new File(base, "pdf/");
+		pdf = new WebResource(findCourses());
+		File dstDir = new File(base, formatDstPath(OUT_PDF_DIR));
 		CepiList.createDirectory(dstDir);
 		    
 		//File storePath = new File(dstDir);
-		pdf = new WebResource(findCourses());
 		return pdf.download(dstDir);
 	}
 	
@@ -80,7 +92,7 @@ public class CepiWeb  {
 		if(pdfPath == null) {
 		    System.err.println("null resource for " + link);
 		} else {
-			File dstLocation = new File(base, "html/");
+			File dstLocation = new File(base, formatDstPath(OUT_HTML_DIR));
 			CepiList.createDirectory(dstLocation);
 			String pdfName = pdf.getFilename();
 
@@ -102,6 +114,7 @@ public class CepiWeb  {
 	public List<Course> getCourses() {
 		File base = new File(CepiList.BASE_DIR);
 		downloadPDF(base);
+		courseList = new CepiCourseList(name, pdf.file);
 		return courseList.getCourses();
 	}
 	

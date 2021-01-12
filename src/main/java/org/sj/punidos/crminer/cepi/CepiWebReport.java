@@ -8,7 +8,7 @@ public class CepiWebReport extends CepiWeb {
 
 	public CepiWebReport(CepiWeb cepi) {
 		super(cepi);
-		month = Month.getMonth(cepi.link);
+		month = DateManager.getMonth(cepi.link);
 	}
 	
 	public String getHtmlRow(CepiWeb cepi) {
